@@ -15,7 +15,6 @@ Basic Command Line Usage:
         Available commands:
 
         generate      Generate a static site
-
         serve         Start a web server to view generated site
 
 Options:
@@ -35,23 +34,23 @@ opts = OptionParser.new do |opts|
     options['ref'] = ref
   end
 
-  opts.on("--base_path [BASE_PATH]", "") do |base_path|
+  opts.on("--base_path [BASE_PATH]", "Prefix to apply to internal links") do |base_path|
     options['base_path'] = base_path
   end
 
-  opts.on("--output_path [OUTPUT_PATH]", "") do |output_path|
+  opts.on("--output_path [OUTPUT_PATH]", "Path to write generated site") do |output_path|
     options['output_path'] = output_path
   end
 
-  opts.on("--port [PORT]", "") do |port|
+  opts.on("--port [PORT]", "Port to use when serving site (default 8000)") do |port|
     options['port'] = port
   end
 
-  opts.on("--include_default_layout", "") do |include_default_layout|
+  opts.on("--include_default_layout", "Include a default layout if one is not present") do |include_default_layout|
     options['include_default_layout'] = include_default_layout
   end
 
-  opts.on_tail("-h", "--help", "Show this information") do
+  opts.on_tail("--help", "Show this information") do
     puts opts
     exit
   end

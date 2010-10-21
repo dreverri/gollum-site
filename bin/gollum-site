@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'optparse'
+require 'rubygems'
+require 'gollum-site'
+
+options = {
+  'ref' => Grit::Repo.new('.').head.name, #current branch
+  'base_path' => '/',
+  'output_path' => '_site',
+  'port' => 8000
+}
+opts = OptionParser.new do |opts|
+  opts.banner = "Static site generator for Gollum wikis"
+
+  opts.on("--ref [REF]", "Branch or commit to generate") do |ref|
+    options['ref'] = ref
+  end
+
+  opts.on("--base_path [BASE_PATH]", "") do |base_path|
+    options['base_path'] = base_path
+  end
+
+  opts.on("--output_path [OUTPUT_PATH]", "") do |output_path|
+    options['output_path'] = output_path
+  end
+
+  opts.on("--port [PORT]", "") do |port|
+    options['port'] = port
+  end
+
+  opts.on("--version", "Display current version.") do
+    puts "Gollum Site " + Gollum::Site::VERSION
+    exit 0
+  end
+end
+
+opts.parse!
+
+cmd = ARGV[0]
+
+case cmd
+when 'generate'
+  wiki = Gollum::Wiki.new('.', {:base_path => options['base_path']})
+  site = Gollum::Site.new(wiki, {:output_path => options['output_path']})
+  site.generate(options['ref'])
+when 'serve'
+  require 'webrick'
+  include WEBrick
+
+  mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
+  mime_types.store 'js', 'application/javascript'
+
+  s = HTTPServer.new(
+                     :Port            => options['port'],
+                     :DocumentRoot    => options['output_path'],
+                     :MimeTypes       => mime_types
+                     )
+  t = Thread.new {
+    s.start
+  }
+
+  trap("INT") { s.shutdown }
+  t.join()
+end

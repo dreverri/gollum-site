@@ -6,14 +6,30 @@ require 'optparse'
 require 'rubygems'
 require 'gollum-site'
 
+help = <<HELP
+Gollum Site is a static site generator for Gollum Wikis
+
+Basic Command Line Usage:
+  gollum-site [OPTIONS] [COMMAND]
+
+        Available commands:
+
+        generate      Generate a static site
+
+        serve         Start a web server to view generated site
+
+Options:
+HELP
+
 options = {
   'ref' => Grit::Repo.new('.').head.name, #current branch
   'base_path' => '/',
   'output_path' => '_site',
-  'port' => 8000
+  'port' => 8000,
+  'include_default_layout' => true
 }
 opts = OptionParser.new do |opts|
-  opts.banner = "Static site generator for Gollum wikis"
+  opts.banner = help
 
   opts.on("--ref [REF]", "Branch or commit to generate") do |ref|
     options['ref'] = ref
@@ -31,7 +47,17 @@ opts = OptionParser.new do |opts|
     options['port'] = port
   end
 
-  opts.on("--version", "Display current version.") do
+  opts.on("--include_default_layout", "") do |include_default_layout|
+    options['include_default_layout'] = include_default_layout
+  end
+
+  opts.on_tail("-h", "--help", "Show this information") do
+    puts opts
+    exit
+  end
+
+  opts.on_tail("--version", "Display current version.") do
+    require 'gollum-site/version'
     puts "Gollum Site " + Gollum::Site::VERSION
     exit 0
   end
@@ -44,7 +70,9 @@ cmd = ARGV[0]
 case cmd
 when 'generate'
   wiki = Gollum::Wiki.new('.', {:base_path => options['base_path']})
-  site = Gollum::Site.new(wiki, {:output_path => options['output_path']})
+  site = Gollum::Site.new(wiki, {
+                            :output_path => options['output_path'],
+                            :include_default_layout => options['include_default_layout']})
   site.generate(options['ref'])
 when 'serve'
   require 'webrick'
@@ -64,4 +92,7 @@ when 'serve'
 
   trap("INT") { s.shutdown }
   t.join()
+else
+  puts opts
+  exit
 end

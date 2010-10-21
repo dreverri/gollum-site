@@ -7,7 +7,9 @@ Generates a static site from a Gollum Wiki.
 
 ## Installation
 
-TODO
+The easiest way to install gollum-site is with RubyGems:
+
+	$ [sudo] gem install gollum-site
 
 ## Usage
 

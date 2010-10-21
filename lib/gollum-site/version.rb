@@ -1,5 +1,5 @@
 module Gollum
-  module Site
+  class Site
     VERSION = "0.0.1"
   end
 end

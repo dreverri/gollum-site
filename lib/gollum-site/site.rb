@@ -5,6 +5,7 @@ module Gollum
     def initialize(wiki, options = {})
       @wiki = wiki
       @output_path = options[:output_path] || "_site"
+      @include_default_layout = options[:include_default_layout] || true
     end
 
     # Public: generate a static site
@@ -29,6 +30,16 @@ module Gollum
           list << entry
         end
         list
+      end
+
+      if layouts["."].nil? and @include_default_layout
+        dir = ::File.dirname(::File.expand_path(__FILE__))
+        default_layout = ::File.join(dir, "layout", "_Layout.html")
+        layout = ::Liquid::Template.parse(IO.read(default_layout))
+        layouts["."] = layout
+        css = ::File.join(dir, "layout", "css")
+        javascript = ::File.join(dir, "layout", "javascript")
+        FileUtils.cp_r([css, javascript], @output_path)
       end
 
       items.each do |item|

@@ -26,13 +26,14 @@ The executable provides a few options which are described in the help menu:
 
 ## Static Site Templates
 
-The static site generator uses the [Liquid templating system](http://github.com/tobi/liquid/wiki)
-to render wiki pages. The generator looks for `_Layout.html` files to use as
-templates. Layouts affect all pages in their directory and any subdirectories that
-do not have a layout file of their own.
+The static site generator uses the
+[Liquid templating system](http://github.com/tobi/liquid/wiki) to render wiki
+pages. The generator looks for `_Layout.html` files to use as templates. Layouts
+affect all pages in their directory and any subdirectories that do not have a
+layout file of their own.
 
-A layout is a Liquid template applied to a wiki page during static site generation with the
-following data made available to it:
+A layout is a Liquid template applied to a wiki page during static site
+generation with the following data made available to it:
 
 * `wiki.base_path`       The base path of the Wiki to which the page belongs
 * `page.content`         The formatted content of the page
@@ -40,3 +41,16 @@ following data made available to it:
 * `page.format`          The format of the page (textile, org, etc.)
 * `page.author`          The author of the last edit
 * `page.date`            The date of the last edit
+
+## Example
+
+To see gollum-site in action, let's use it to generate a static site from a
+Gollum Wiki. For this example I will use the Radiant wiki:
+
+       $ git clone git://github.com/radiant/radiant.wiki.git
+       $ cd radiant.wiki
+       $ gollum-site generate
+       $ gollum-site serve
+
+Now you can browse to http://localhost:8000 and view the Radiant wiki as a
+static site.

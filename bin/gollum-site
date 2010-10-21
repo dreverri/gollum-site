@@ -84,8 +84,10 @@ when 'serve'
   s = HTTPServer.new(
                      :Port            => options['port'],
                      :DocumentRoot    => options['output_path'],
-                     :MimeTypes       => mime_types
+                     :MimeTypes       => mime_types,
+                     :DirectoryIndex  => 'Home.html'
                      )
+
   t = Thread.new {
     s.start
   }

@@ -21,7 +21,7 @@ Options:
 HELP
 
 options = {
-  'ref' => Grit::Repo.new('.').head.name, #current branch
+  'ref' => ( head = Grit::Repo.new('.').head ) ? head.name : 'master', # current branch
   'base_path' => '/',
   'output_path' => '_site',
   'port' => 8000,

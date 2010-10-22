@@ -55,3 +55,22 @@ context "Site inherits default layout" do
     FileUtils.rm_r(@site.output_path)
   end
 end
+
+context "Site does not inherit default layout" do
+  setup do
+    @wiki = Gollum::Wiki.new(testpath("examples/test_site_no_layout.git"))
+    @site = Gollum::Site.new(@wiki,
+                             {:output_path => testpath("examples/site"),
+                             :include_default_layout => false})
+    @site.generate("master")
+  end
+
+  test "check that default layout is used" do
+    assert !File.exists?(File.join(@site.output_path, "css"))
+    assert !File.exists?(File.join(@site.output_path, "javascript"))
+  end
+
+  teardown do
+    FileUtils.rm_r(@site.output_path)
+  end
+end

@@ -5,7 +5,9 @@ module Gollum
     def initialize(wiki, options = {})
       @wiki = wiki
       @output_path = options[:output_path] || "_site"
-      @include_default_layout = options[:include_default_layout] || true
+      if (@include_default_layout = options[:include_default_layout]).nil?
+        @include_default_layout = true
+      end
     end
 
     # Public: generate a static site

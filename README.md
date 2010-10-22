@@ -44,6 +44,15 @@ generation with the following data made available to it:
 * `page.author`          The author of the last edit
 * `page.date`            The date of the last edit
 
+## Default Layout
+
+A default layout is applied to the root folder for wikis that do not define a
+root layout. The default layout is the same used in gollum without the edit
+features. It's possible to generate a site without the default template using
+the "--no_default_layout" option:
+
+       $ gollum-site --no_default_layout generate
+
 ## Example
 
 To see gollum-site in action, let's use it to generate a static site from a

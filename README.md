@@ -53,6 +53,15 @@ the "--no_default_layout" option:
 
        $ gollum-site --no_default_layout generate
 
+## Import
+
+The gollum-site executable provides the ability to import the default layout to
+the current wiki. The import command will copy the required "_Layout.html", css
+and javascript to the current wiki. These files must be committed to the wiki
+repository before the 'generate' command will recognize them.
+
+       $ gollum-site import
+
 ## Example
 
 To see gollum-site in action, let's use it to generate a static site from a

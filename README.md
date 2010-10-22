@@ -11,6 +11,20 @@ The easiest way to install gollum-site is with RubyGems:
 
 	$ [sudo] gem install gollum-site
 
+## Supported formats
+
+Gollum supports several formats for wiki text. In order to generate the various
+supported formats certain dependencies must be met:
+
+* [ASCIIDoc](http://www.methods.co.nz/asciidoc/) -- `brew install asciidoc`
+* [Creole](http://wikicreole.org/) -- `gem install creole`
+* [Markdown](http://daringfireball.net/projects/markdown/) -- `gem install rdiscount`
+* [Org](http://orgmode.org/) -- `gem install org-ruby`
+* [Pod](http://search.cpan.org/dist/perl/pod/perlpod.pod) -- `Pod::Simple::HTML` comes with Perl >= 5.10. Lower versions should install Pod::Simple from CPAN.
+* [RDoc](http://rdoc.sourceforge.net/)
+* [ReStructuredText](http://docutils.sourceforge.net/rst.html) -- `easy_install docutils`
+* [Textile](http://www.textism.com/tools/textile/) -- `gem install RedCloth`
+
 ## Usage
 
 Static sites can be generated using the executable provided:

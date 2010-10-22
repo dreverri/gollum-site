@@ -25,7 +25,7 @@ options = {
   'base_path' => '/',
   'output_path' => '_site',
   'port' => 8000,
-  'include_default_layout' => true
+  'default_layout' => true
 }
 opts = OptionParser.new do |opts|
   opts.banner = help
@@ -46,8 +46,8 @@ opts = OptionParser.new do |opts|
     options['port'] = port
   end
 
-  opts.on("--include_default_layout", "Include a default layout if one is not present") do |include_default_layout|
-    options['include_default_layout'] = include_default_layout
+  opts.on("--no_default_layout", "Don't include a default layout") do |default_layout|
+    options['default_layout'] = !default_layout
   end
 
   opts.on_tail("--help", "Show this information") do
@@ -71,7 +71,7 @@ when 'generate'
   wiki = Gollum::Wiki.new('.', {:base_path => options['base_path']})
   site = Gollum::Site.new(wiki, {
                             :output_path => options['output_path'],
-                            :include_default_layout => options['include_default_layout']})
+                            :include_default_layout => options['default_layout']})
   site.generate(options['ref'])
 when 'serve'
   require 'webrick'

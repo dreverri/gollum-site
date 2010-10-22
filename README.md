@@ -3,7 +3,7 @@ gollum-site -- A static site generator for Gollum
 
 ## Description
 
-Generates a static site from a Gollum Wiki.
+Generates a static site from a [Gollum](http://github.com/github/gollum) Wiki.
 
 ## Installation
 

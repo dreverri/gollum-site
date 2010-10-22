@@ -1,5 +1,9 @@
 module Gollum
   class Site
+    def self.default_layout_dir()
+      ::File.join(::File.dirname(::File.expand_path(__FILE__)), "layout")
+    end
+
     attr_reader :output_path
 
     def initialize(wiki, options = {})
@@ -35,12 +39,12 @@ module Gollum
       end
 
       if layouts["."].nil? and @include_default_layout
-        dir = ::File.dirname(::File.expand_path(__FILE__))
-        default_layout = ::File.join(dir, "layout", "_Layout.html")
+        dir = Gollum::Site.default_layout_dir()
+        default_layout = ::File.join(dir, "_Layout.html")
         layout = ::Liquid::Template.parse(IO.read(default_layout))
         layouts["."] = layout
-        css = ::File.join(dir, "layout", "css")
-        javascript = ::File.join(dir, "layout", "javascript")
+        css = ::File.join(dir, "css")
+        javascript = ::File.join(dir, "javascript")
         FileUtils.cp_r([css, javascript], @output_path)
       end
 

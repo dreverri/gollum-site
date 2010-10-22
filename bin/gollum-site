@@ -16,6 +16,7 @@ Basic Command Line Usage:
 
         generate      Generate a static site
         serve         Start a web server to view generated site
+        import        Import the default layout into the current wiki
 
 Options:
 HELP
@@ -93,6 +94,13 @@ when 'serve'
 
   trap("INT") { s.shutdown }
   t.join()
+when 'import'
+  dir = Gollum::Site.default_layout_dir()
+  layout = ::File.join(dir, "_Layout.html")
+  css = ::File.join(dir, "css")
+  javascript = ::File.join(dir, "javascript")
+  FileUtils.cp_r([layout, css, javascript], '.')
+  puts "The default layout has been imported. Don't forget to commit these changes."
 else
   puts opts
   exit

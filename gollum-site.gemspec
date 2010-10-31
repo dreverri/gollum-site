@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "gollum-site"
 
-  s.add_dependency('gollum')
+  s.add_dependency('gollum', '>= 1.1.0')
   s.add_dependency('liquid')
 
   s.files         = `git ls-files`.split("\n")

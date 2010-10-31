@@ -18,9 +18,10 @@ context "Site" do
                  Dir[@site.output_path + "/**/*"].map { |f| f.sub(@site.output_path, "") })
   end
 
-  test "render page with layout" do
+  test "render page with layout and link" do
     home_path = File.join(@site.output_path, "Home.html")
-    assert_equal(["<html><p>Site test</p></html>\n"], File.open(home_path).readlines)
+    assert_equal(["<html><p>Site test\n",
+                  "<a class=\"internal present\" href=\"/Page1.html\">Page1</a></p></html>\n"], File.open(home_path).readlines)
   end
 
   test "render page with layout from parent dir" do

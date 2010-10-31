@@ -10,11 +10,10 @@ module Gollum
 
     def find(cname, version)
       name = cname[0..-6]
-      if commit = @wiki.repo.commit(version)
-        if page = find_page_in_tree(commit.tree, name)
-          page.version = commit
-          page
-        end
+      map = @wiki.tree_map_for(version)
+      if page = find_page_in_tree(map, name)
+        page.version = Grit::Commit.create(@wiki.repo, :id => version)
+        page
       end
     end
   end

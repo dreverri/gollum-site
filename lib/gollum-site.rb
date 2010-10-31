@@ -1,9 +1,8 @@
 require 'gollum'
 require 'liquid'
-require 'gollum-site/page'
 require 'gollum-site/site'
 
-# Site generation depends on methods not available in 1.0.1
-# Including more recent version of some objects
-require 'gollum-site/blob_entry'
-require 'gollum-site/wiki'
+# overwrite cname and find method in Page class
+# should replace with custom Page class once issue #63 is fixed
+# http://github.com/github/gollum/issues/#issue/63
+require 'gollum-site/page'

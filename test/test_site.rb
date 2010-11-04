@@ -10,6 +10,7 @@ context "Site" do
 
   test "generate static site" do
     assert_equal(["/Home.html",
+                  "/Page-One.html",
                   "/Page1.html",
                   "/Page2.html",
                   "/static",
@@ -21,7 +22,9 @@ context "Site" do
   test "render page with layout and link" do
     home_path = File.join(@site.output_path, "Home.html")
     assert_equal(["<html><p>Site test\n",
-                  "<a class=\"internal present\" href=\"/Page1.html#test\">Page1#test</a></p></html>\n"], File.open(home_path).readlines)
+                  "<a class=\"internal present\" href=\"/Page1.html#test\">Page1#test</a>\n",
+                  "<a class=\"internal present\" href=\"/Page-One.html#test\">Page with anchor</a></p></html>\n"],
+                 File.open(home_path).readlines)
   end
 
   test "render page with layout from parent dir" do

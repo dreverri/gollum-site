@@ -8,4 +8,5 @@ require 'gollum-site/site'
 require 'gollum-site/page'
 
 # Markup does not use page version :(
+# Markup does not handle anchor tags for absent pages
 require 'gollum-site/markup'

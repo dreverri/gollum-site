@@ -9,13 +9,14 @@ context "Site" do
   end
 
   test "generate static site" do
-    diff = ["/Home.html",
-                  "/Page-One.html",
-                  "/Page1.html",
-                  "/Page2.html",
-                  "/static",
-                  "/static/static.jpg",
-                  "/static/static.txt"] - Dir[@site.output_path + "/**/*"].map { |f| f.sub(@site.output_path, "") }
+    diff = Dir[@site.output_path + "/**/*"].map { |f| f.sub(@site.output_path, "") } - ["/Home.html",
+                                                                                        "/Page-One.html",
+                                                                                        "/Page1.html",
+                                                                                        "/Page2.html",
+                                                                                        "/page.html",
+                                                                                        "/static",
+                                                                                        "/static/static.jpg",
+                                                                                        "/static/static.txt"]
     assert_equal([], diff)
   end
 
@@ -35,6 +36,11 @@ context "Site" do
   test "render page with layout from sub dir" do
     page_path = File.join(@site.output_path, "Page2.html")
     assert_equal(["<html><body><p>Site test</p></body></html>\n"], File.open(page_path).readlines)
+  end
+
+  test "page.path is available on template" do
+    page_path = File.join(@site.output_path, "page.html")
+    assert_equal(["<ul><li>page.html</li></ul>\n"], File.open(page_path).readlines)
   end
 
   teardown do

@@ -82,7 +82,8 @@ module Gollum
     end
 
     def page_to_liquid(page)
-      {"content" => page.formatted_data,
+      { "path" => @wiki.page_class.cname(page.name),
+        "content" => page.formatted_data,
         "title" => page.title,
         "format" => page.format.to_s,
         "author" => page.version.author.name,

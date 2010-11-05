@@ -52,6 +52,7 @@ A layout is a Liquid template applied to a wiki page during static site
 generation with the following data made available to it:
 
 * `wiki.base_path`       The base path of the Wiki to which the page belongs
+* `page.path`            The output path of the page
 * `page.content`         The formatted content of the page
 * `page.title`           The title of the page
 * `page.format`          The format of the page (textile, org, etc.)

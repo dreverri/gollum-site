@@ -9,14 +9,14 @@ context "Site" do
   end
 
   test "generate static site" do
-    assert_equal(["/Home.html",
+    diff = ["/Home.html",
                   "/Page-One.html",
                   "/Page1.html",
                   "/Page2.html",
                   "/static",
                   "/static/static.jpg",
-                  "/static/static.txt"],
-                 Dir[@site.output_path + "/**/*"].map { |f| f.sub(@site.output_path, "") })
+                  "/static/static.txt"] - Dir[@site.output_path + "/**/*"].map { |f| f.sub(@site.output_path, "") }
+    assert_equal([], diff)
   end
 
   test "render page with layout and link" do

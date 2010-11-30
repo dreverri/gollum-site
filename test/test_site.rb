@@ -2,8 +2,8 @@ require File.join(File.dirname(__FILE__), *%w[helper])
 
 context "Site" do
   setup do
-    @wiki = Gollum::Wiki.new(testpath("examples/test_site.git"))
-    @site = Gollum::Site.new(@wiki,
+    path = testpath("examples/test_site.git")
+    @site = Gollum::Site.new(path,
                              {:output_path => testpath("examples/site")})
     @site.generate("master")
   end
@@ -50,8 +50,8 @@ end
 
 context "Site inherits default layout" do
   setup do
-    @wiki = Gollum::Wiki.new(testpath("examples/test_site_no_layout.git"))
-    @site = Gollum::Site.new(@wiki,
+    path = testpath("examples/test_site_no_layout.git")
+    @site = Gollum::Site.new(path,
                              {:output_path => testpath("examples/site")})
     @site.generate("master")
   end
@@ -68,8 +68,8 @@ end
 
 context "Site does not inherit default layout" do
   setup do
-    @wiki = Gollum::Wiki.new(testpath("examples/test_site_no_layout.git"))
-    @site = Gollum::Site.new(@wiki,
+    path = testpath("examples/test_site_no_layout.git")
+    @site = Gollum::Site.new(path,
                              {:output_path => testpath("examples/site"),
                              :include_default_layout => false})
     @site.generate("master")

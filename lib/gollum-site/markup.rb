@@ -1,6 +1,3 @@
-require 'digest/sha1'
-require 'cgi'
-
 module Gollum
   class Markup
 

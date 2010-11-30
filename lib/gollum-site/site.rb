@@ -6,8 +6,13 @@ module Gollum
 
     attr_reader :output_path
 
-    def initialize(wiki, options = {})
-      @wiki = wiki
+    def initialize(path, options = {})
+      @wiki = Gollum::Wiki.new(path, {
+                                 # markup_class should work after v1.1.0 of Gollum
+                                 # need to change class name in markup.rb
+                                 #:markup_class => Gollum::SiteMarkup,
+                                :page_class => Gollum::SitePage,
+                                :base_path => options[:base_path]})
       @output_path = options[:output_path] || "_site"
       if (@include_default_layout = options[:include_default_layout]).nil?
         @include_default_layout = true

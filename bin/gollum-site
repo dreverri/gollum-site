@@ -69,8 +69,8 @@ cmd = ARGV[0]
 
 case cmd
 when 'generate'
-  wiki = Gollum::Wiki.new('.', {:base_path => options['base_path']})
-  site = Gollum::Site.new(wiki, {
+  site = Gollum::Site.new('.', {
+                            :base_path => options['base_path'],
                             :output_path => options['output_path'],
                             :include_default_layout => options['default_layout']})
   site.generate(options['ref'])

@@ -1,5 +1,6 @@
 module Gollum
-  class Page
+  class SitePage < Gollum::Page
+  #class Page
     # Add ".html" extension to page links
     def self.cname(name)
       cname = name.respond_to?(:gsub)      ?

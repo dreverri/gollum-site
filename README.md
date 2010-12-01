@@ -68,6 +68,13 @@ repository before the 'generate' command will recognize them.
 
        $ gollum-site import
 
+## Working
+
+You can generate a static site from untracked/uncommitted changes by using the
+"--working" flag.
+
+       $ gollum-site generate --working
+
 ## Example
 
 To see gollum-site in action, let's use it to generate a static site from a

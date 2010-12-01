@@ -73,7 +73,7 @@ when 'generate'
                             :base_path => options['base_path'],
                             :output_path => options['output_path']})
   if options['working']
-    site.preview()
+    site.generate(:working)
   else
     site.generate(options['ref'])
   end

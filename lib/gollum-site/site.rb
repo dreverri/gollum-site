@@ -14,9 +14,6 @@ module Gollum
                                 :page_class => Gollum::SitePage,
                                 :base_path => options[:base_path]})
       @output_path = options[:output_path] || "_site"
-      if (@include_default_layout = options[:include_default_layout]).nil?
-        @include_default_layout = true
-      end
     end
 
     # Public: generate a static site
@@ -26,77 +23,23 @@ module Gollum
     def generate(version = 'master')
       ::Dir.mkdir(@output_path) unless ::File.exists? @output_path
 
-      layouts = {}
-      items = @wiki.tree_map_for(version).inject([]) do |list, entry|
-        if entry.name =~ /^_Footer./
+      items = @wiki.tree_map_for(version).each do |entry|
+        if entry.name =~ /(^_Footer.|^_Layout.html)/
           # Ignore
-        elsif entry.name == "_Layout.html"
-          layout = ::Liquid::Template.parse(entry.blob(@wiki.repo).data)
-          layouts[::File.dirname(entry.path)] = layout
         elsif @wiki.page_class.valid_page_name?(entry.name)
+          # Output page html
           sha = @wiki.ref_map[version] || version
-          page = entry.page(@wiki, @wiki.repo.commit(sha))
-          list << page
+          entry.page(@wiki, @wiki.repo.commit(sha)).generate(@output_path, version)
         else
-          list << entry
-        end
-        list
-      end
-
-      if layouts["."].nil? and @include_default_layout
-        dir = Gollum::Site.default_layout_dir()
-        default_layout = ::File.join(dir, "_Layout.html")
-        layout = ::Liquid::Template.parse(IO.read(default_layout))
-        layouts["."] = layout
-        css = ::File.join(dir, "css")
-        javascript = ::File.join(dir, "javascript")
-        FileUtils.cp_r([css, javascript], @output_path)
-      end
-
-      items.each do |item|
-        if item.is_a?(@wiki.page_class)
-          path = ::File.join(@output_path, @wiki.page_class.cname(item.name))
-          layout = get_layout(layouts, ::File.dirname(item.path))
-          data = render_page(item, layout)
-        else
-          path = ::File.join(@output_path, item.path)
+          # Write file to output_path
+          path = ::File.join(@output_path, entry.path)
           ::FileUtils.mkdir_p(::File.dirname(path))
-          data = item.blob(@wiki.repo).data
+          data = entry.blob(@wiki.repo).data
+          f = ::File.new(path, "w")
+          f.write(data)
+          f.close
         end
-        f = ::File.new(path, "w")
-        f.write(data)
-        f.close
       end
-    end
-
-    def get_layout(layouts, path)
-      if path == ""
-        layouts["."]
-      else
-        layouts[path] or get_layout(layouts, path.split("/")[0..-2].join("/"))
-      end
-    end
-
-    def render_page(page, layout=nil)
-      if layout.nil?
-        return page.formatted_data
-      else
-        return layout.render( 'page' => page_to_liquid(page),
-                              'wiki' => wiki_to_liquid(page.wiki))
-      end
-    end
-
-    def page_to_liquid(page)
-      { "path" => @wiki.page_class.cname(page.name),
-        "content" => page.formatted_data,
-        "title" => page.title,
-        "format" => page.format.to_s,
-        "author" => page.version.author.name,
-        "date" => page.version.authored_date.strftime("%Y-%m-%d %H:%M:%S")}
-    end
-
-    def wiki_to_liquid(wiki)
-      {"base_path" => wiki.base_path}
     end
   end
 end

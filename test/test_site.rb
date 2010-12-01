@@ -52,7 +52,9 @@ end
 context "Preview" do
   setup do
     @path = testpath("examples/uncommitted_untracked_changes")
+    # Add untracked file
     File.open(@path + '/Foo.md', 'w') { |f| f.write("Bar") }
+    # Modify tracked file
     File.open(@path + '/Home.md', 'w') { |f| f.write("Hello World\nHello World") }
     @site = Gollum::Site.new(@path,
                              {:output_path => testpath("examples/site")})
@@ -73,7 +75,9 @@ context "Preview" do
   end
 
   teardown do
+    # Remove untracked file
     FileUtils.rm(@path + '/Foo.md')
+    # Reset tracked file
     File.open(@path + '/Home.md', 'w') { |f| f.write("Hello World\n") }
     FileUtils.rm_r(@site.output_path)
   end

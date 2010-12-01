@@ -23,16 +23,20 @@ HELP
 
 options = {
   'ref' => ( head = Grit::Repo.new('.').head ) ? head.name : 'master', # current branch
+  'working' => false,
   'base_path' => '/',
   'output_path' => '_site',
-  'port' => 8000,
-  'default_layout' => true
+  'port' => 8000
 }
 opts = OptionParser.new do |opts|
   opts.banner = help
 
   opts.on("--ref [REF]", "Branch or commit to generate") do |ref|
     options['ref'] = ref
+  end
+
+  opts.on("--working", "Use working changes during site generation") do |working|
+    options['working'] = true
   end
 
   opts.on("--base_path [BASE_PATH]", "Prefix to apply to internal links") do |base_path|
@@ -68,7 +72,11 @@ when 'generate'
   site = Gollum::Site.new('.', {
                             :base_path => options['base_path'],
                             :output_path => options['output_path']})
-  site.generate(options['ref'])
+  if options['working']
+    site.preview()
+  else
+    site.generate(options['ref'])
+  end
 when 'serve'
   require 'webrick'
   include WEBrick

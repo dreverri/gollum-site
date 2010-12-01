@@ -47,27 +47,38 @@ module Gollum
       deleted = @wiki.repo.git.native(:ls_files, ls_opts_del).split("\0")
       working = @wiki.repo.git.native(:ls_files, ls_opts).split("\0")
       work_tree = (working - deleted).map do |path|
-        ::File.join(@wiki.repo.git.work_tree, @wiki.decode_git_path(path))
+        @wiki.decode_git_path(path)
       end
       Dir.chdir(cwd) # change back to original directory
 
+      layouts = {}
       work_tree.each do |path|
+        filename = ::File.basename(path)
+        if filename =~ /^_Layout.html/
+          abspath = ::File.join(@wiki.repo.git.work_tree, path)
+          layouts[path] = ::Liquid::Template.parse(IO.read(abspath))
+        end
+      end
+
+      work_tree.each do |path|
+        abspath = ::File.join(@wiki.repo.git.work_tree, path)
         filename = ::File.basename(path)
         if filename =~ /(^_Footer.|^_Layout.html)/
           # Ignore
         elsif @wiki.page_class.valid_page_name?(filename)
           # Output page HTML
           page = @wiki.page_class.new(@wiki)
-          blob = OpenStruct.new(:name => filename, :data => IO.read(path))
-          page.populate(blob, filename)
+          blob = OpenStruct.new(:name => filename, :data => IO.read(abspath))
+          page.populate(blob, ::File.dirname(path))
           page.version = @wiki.repo.commit("HEAD")
           page.preview = true
           page.work_tree = work_tree
+          page.layouts = layouts
           page.generate(@output_path, "HEAD")
         else
           opath = ::File.join(@output_path, path)
           ::FileUtils.mkdir_p(::File.dirname(opath))
-          data = IO.read(path)
+          data = IO.read(abspath)
           f = ::File.new(opath, "w")
           f.write(data)
           f.close

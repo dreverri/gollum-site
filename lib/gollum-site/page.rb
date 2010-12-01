@@ -2,6 +2,7 @@ module Gollum
   class SitePage < Gollum::Page
     attr_writer :preview
     attr_writer :work_tree
+    attr_writer :layouts
 
     # Add ".html" extension to page links
     def self.cname(name)
@@ -56,14 +57,14 @@ module Gollum
       dirs.pop
       while !dirs.empty?
         path = dirs.join('/') + '/' + name
-        if ::File.exists?(path)
-          return ::Liquid::Template.parse(IO.read(path))
+        if l = @layouts[path]
+          return l
         end
         dirs.pop
       end
 
-      if ::File.exists?(name)
-        return ::Liquid::Template.parse(IO.read(path))
+      if l = @layouts[name]
+        return l
       end
     end
 

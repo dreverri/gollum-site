@@ -3,9 +3,11 @@ require File.join(File.dirname(__FILE__), *%w[helper])
 context "Site" do
   setup do
     path = testpath("examples/test_site.git")
-    @site = Gollum::Site.new(path,
-                             {:output_path => testpath("examples/site")})
-    @site.generate("master")
+    @site = Gollum::Site.new(path,{
+                               :output_path => testpath("examples/site"),
+                               :version => "master"
+                             })
+    @site.generate()
   end
 
   test "generate static site" do
@@ -56,9 +58,11 @@ context "Preview" do
     File.open(@path + '/Foo.md', 'w') { |f| f.write("Bar") }
     # Modify tracked file
     File.open(@path + '/Home.md', 'w') { |f| f.write("Hello World\nHello World") }
-    @site = Gollum::Site.new(@path,
-                             {:output_path => testpath("examples/site")})
-    @site.generate(:working)
+    @site = Gollum::Site.new(@path, {
+                               :output_path => testpath("examples/site"),
+                               :version => :working
+                             })
+    @site.generate()
   end
 
   test "preview site has Home and Foo" do

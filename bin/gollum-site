@@ -47,10 +47,6 @@ opts = OptionParser.new do |opts|
     options['port'] = port
   end
 
-  opts.on("--no_default_layout", "Don't include a default layout") do |default_layout|
-    options['default_layout'] = !default_layout
-  end
-
   opts.on_tail("--help", "Show this information") do
     puts opts
     exit
@@ -71,8 +67,7 @@ case cmd
 when 'generate'
   site = Gollum::Site.new('.', {
                             :base_path => options['base_path'],
-                            :output_path => options['output_path'],
-                            :include_default_layout => options['default_layout']})
+                            :output_path => options['output_path']})
   site.generate(options['ref'])
 when 'serve'
   require 'webrick'

@@ -93,13 +93,25 @@ module Gollum
     def generate(version = 'master')
       ::Dir.mkdir(@output_path) unless ::File.exists? @output_path
 
-      items = @wiki.tree_map_for(version).each do |entry|
+      items = @wiki.tree_map_for(version)
+
+      layouts = {}
+      items.each do |entry|
+        if entry.name =~ /^_Layout.html/
+          data = entry.blob(@wiki.repo).data
+          layouts[entry.path] = ::Liquid::Template.parse(data)
+        end
+      end
+
+      items.each do |entry|
         if entry.name =~ /(^_Footer.|^_Layout.html)/
           # Ignore
         elsif @wiki.page_class.valid_page_name?(entry.name)
           # Output page HTML
           sha = @wiki.ref_map[version] || version
-          entry.page(@wiki, @wiki.repo.commit(sha)).generate(@output_path, version)
+          page = entry.page(@wiki, @wiki.repo.commit(sha))
+          page.layouts = layouts
+          page.generate(@output_path, version)
         else
           # Write file to output_path
           path = ::File.join(@output_path, entry.path)

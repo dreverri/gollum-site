@@ -43,15 +43,7 @@ module Gollum
     end
 
     # Return layout or nil
-    def layout(version)
-      if @preview
-        layout_from_work_tree()
-      else
-        layout_from_repo(version)
-      end
-    end
-
-    def layout_from_work_tree()
+    def layout()
       name = '_Layout.html'
       dirs = self.path.split('/')
       dirs.pop
@@ -68,25 +60,9 @@ module Gollum
       end
     end
 
-    def layout_from_repo(version)
-      dirs = self.path.split('/')
-      dirs.pop
-      file = @wiki.file_class.new(@wiki)
-      while !dirs.empty?
-        if f = file.find(dirs.join('/') + '/_Layout.html', version)
-          return ::Liquid::Template.parse(f.raw_data)
-        end
-        dirs.pop
-      end
-
-      if f = file.find('_Layout.html', version)
-        return ::Liquid::Template.parse(f.raw_data)
-      end
-    end
-
     # Output static HTML of current page
     def generate(output_path, version)
-      data = if l = layout(version)
+      data = if l = layout()
         l.render( 'page' => self,
                   'wiki' => {'base_path' => @wiki.base_path})
       else

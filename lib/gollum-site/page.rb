@@ -1,9 +1,5 @@
 module Gollum
   class SitePage < Gollum::Page
-    attr_writer :preview
-    attr_writer :work_tree
-    attr_writer :layouts
-
     # Add ".html" extension to page links
     def self.cname(name)
       cname = name.respond_to?(:gsub)      ?
@@ -20,26 +16,8 @@ module Gollum
 
     # Markup uses this method for absent/present class assignment on page links
     def find(cname, version)
-      name = cname.gsub(/.html$/, '')
-      if @preview
-        # Find page in work tree
-        @work_tree.grep(Regexp.new(name)).each do |path|
-          filename = ::File.basename(path)
-          if @wiki.page_class.valid_page_name?(filename)
-            page = @wiki.page_class.new(@wiki)
-            blob = OpenStruct.new(:name => filename, :data => IO.read(path))
-            page.populate(blob, filename)
-            page.version = @wiki.repo.commit("HEAD")
-            return page
-          end
-        end
-      else
-        map = @wiki.tree_map_for(version)
-        if page = find_page_in_tree(map, name)
-          page.version = Grit::Commit.create(@wiki.repo, :id => version)
-          page
-        end
-      end
+      name = self.class.canonicalize_filename(cname)
+      @wiki.site.pages[name]
     end
 
     # Return layout or nil
@@ -49,13 +27,13 @@ module Gollum
       dirs.pop
       while !dirs.empty?
         path = dirs.join('/') + '/' + name
-        if l = @layouts[path]
+        if l = @wiki.site.layouts[path]
           return l
         end
         dirs.pop
       end
 
-      if l = @layouts[name]
+      if l = @wiki.site.layouts[name]
         return l
       end
     end
@@ -69,9 +47,9 @@ module Gollum
         formatted_data
       end
 
-      f = ::File.new(::File.join(output_path, self.class.cname(name)), 'w')
-      f.write(data)
-      f.close
+      ::File.open(::File.join(output_path, self.class.cname(name)), 'w') do |f|
+        f.write(data)
+      end
     end
 
     # Return data for Liquid template
@@ -82,6 +60,12 @@ module Gollum
         "format" => format.to_s,
         "author" => version.author.name,
         "date" => version.authored_date.strftime("%Y-%m-%d %H:%M:%S")}
+    end
+
+    def populate(blob, path)
+      @blob = blob
+      @path = (path + '/' + blob.name)
+      self
     end
   end
 end

@@ -58,7 +58,7 @@ context "Preview" do
     File.open(@path + '/Home.md', 'w') { |f| f.write("Hello World\nHello World") }
     @site = Gollum::Site.new(@path,
                              {:output_path => testpath("examples/site")})
-    @site.preview()
+    @site.generate(:working)
   end
 
   test "preview site has Home and Foo" do

@@ -9,14 +9,15 @@ context "Site" do
   end
 
   test "generate static site" do
-    diff = Dir[@site.output_path + "/**/*"].map { |f| f.sub(@site.output_path, "") } - ["/Home.html",
-                                                                                        "/Page-One.html",
-                                                                                        "/Page1.html",
-                                                                                        "/Page2.html",
-                                                                                        "/page.html",
-                                                                                        "/static",
-                                                                                        "/static/static.jpg",
-                                                                                        "/static/static.txt"]
+    diff = Dir[@site.output_path + "/**/*"].
+      map { |f| f.sub(@site.output_path, "") } - ["/Home.html",
+                                                  "/Page-One.html",
+                                                  "/Page1.html",
+                                                  "/Page2.html",
+                                                  "/page.html",
+                                                  "/static",
+                                                  "/static/static.jpg",
+                                                  "/static/static.txt"]
     assert_equal([], diff)
   end
 
@@ -41,6 +42,32 @@ context "Site" do
   test "page.path is available on template" do
     page_path = File.join(@site.output_path, "page.html")
     assert_equal(["<ul><li>page.html</li></ul>\n"], File.open(page_path).readlines)
+  end
+
+  teardown do
+    FileUtils.rm_r(@site.output_path)
+  end
+end
+
+context "Preview" do
+  setup do
+    path = testpath("examples/uncommitted_untracked_changes")
+    @site = Gollum::Site.new(path,
+                             {:output_path => testpath("examples/site")})
+    @site.preview()
+  end
+
+  test "preview site has Home and Foo" do
+    diff = Dir[@site.output_path + "/**/*"].
+      map { |f| f.sub(@site.output_path, "") } - ["/Home.html",
+                                                  "/Foo.html",
+                                                  "/Bar.html"]
+    assert_equal([], diff)
+  end
+
+  test "preview site Home content is uncommitted version" do
+    data = IO.read(::File.join(@site.output_path, "Home.html"))
+    assert_equal("<p>Hello World\nHello World</p>", data)
   end
 
   teardown do

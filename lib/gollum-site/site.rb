@@ -16,6 +16,46 @@ module Gollum
       @output_path = options[:output_path] || "_site"
     end
 
+    # Generate static HTML including uncommitted/untracked changes
+    def preview()
+      if @wiki.repo.git.work_tree == @wiki.repo.git.git_dir
+        raise Exception("This operation must be run in a work tree")
+      end
+      ::Dir.mkdir(@output_path) unless ::File.exists? @output_path
+
+      cwd = Dir.pwd # need to change directories for git ls-files -o
+      Dir.chdir(@wiki.repo.git.work_tree)
+      work_tree = @wiki.repo.git.native(:ls_files, {:others => true,
+                              :exclude_standard => true,
+                              :cached => true}) \
+        .split("\n") \
+        .map { |path| ::File.join(@wiki.repo.git.work_tree, path) }
+      Dir.chdir(cwd) # change back to original directory
+
+      work_tree.each do |path|
+        filename = ::File.basename(path)
+        if filename =~ /(^_Footer.|^_Layout.html)/
+          # Ignore
+        elsif @wiki.page_class.valid_page_name?(filename)
+          # Output page HTML
+          page = @wiki.page_class.new(@wiki)
+          blob = OpenStruct.new(:name => filename, :data => IO.read(path))
+          page.populate(blob, filename)
+          page.version = @wiki.repo.commit("HEAD")
+          page.preview = true
+          page.work_tree = work_tree
+          page.generate(@output_path, "HEAD")
+        else
+          opath = ::File.join(@output_path, path)
+          ::FileUtils.mkdir_p(::File.dirname(opath))
+          data = IO.read(path)
+          f = ::File.new(opath, "w")
+          f.write(data)
+          f.close
+        end
+      end
+    end
+
     # Public: generate a static site
     #
     # version - The String version ID to generate (default: "master").
@@ -27,7 +67,7 @@ module Gollum
         if entry.name =~ /(^_Footer.|^_Layout.html)/
           # Ignore
         elsif @wiki.page_class.valid_page_name?(entry.name)
-          # Output page html
+          # Output page HTML
           sha = @wiki.ref_map[version] || version
           entry.page(@wiki, @wiki.repo.commit(sha)).generate(@output_path, version)
         else

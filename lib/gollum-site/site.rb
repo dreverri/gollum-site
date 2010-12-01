@@ -28,7 +28,7 @@ module Gollum
       @files = {}
       @layouts = {}
 
-      commit = version == :working ? @wiki.repo.commit("HEAD") : @wiki.repo.commit(version)
+      @commit = version == :working ? @wiki.repo.commit("HEAD") : @wiki.repo.commit(version)
       items = self.ls(version)
 
       items.each do |item|
@@ -44,7 +44,7 @@ module Gollum
           page = @wiki.page_class.new(@wiki)
           blob = OpenStruct.new(:name => filename, :data => item.data)
           page.populate(blob, dirname)
-          page.version = commit
+          page.version = @commit
           @pages[page.name] = page
         else
           # file
@@ -87,6 +87,35 @@ module Gollum
       else
         return @wiki.tree_map_for(version).map do |entry|
           OpenStruct.new(:path => entry.path, :data => entry.blob(@wiki.repo).data)
+        end
+      end
+    end
+
+    # path must be relative to top level of wiki repo
+    def update_working_item(path)
+      filename = ::File.basename(path)
+      dirname = ::File.dirname(path)
+      if filename =~ /^_Footer./
+        # ignore
+      elsif filename =~ /^_Layout.html/
+        # layout
+      elsif @wiki.page_class.valid_page_name?(filename)
+        # page
+        abspath = ::File.join(@wiki.repo.git.work_tree, path)
+        page = @wiki.page_class.new(@wiki)
+        blob = OpenStruct.new(:name => filename, :data => IO.read(abspath))
+        page.populate(blob, dirname)
+        page.version = @commit
+        @pages[page.name] = page
+        page.generate(@output_path, @version)
+      else
+        # file
+        data = IO.read(abspath)
+        @files[path] = data
+        path = ::File.join(@output_path, path)
+        ::FileUtils.mkdir_p(::File.dirname(path))
+        ::File.open(path, "w") do |f|
+          f.write(data)
         end
       end
     end

@@ -65,7 +65,7 @@ context "Preview" do
     @site.generate()
   end
 
-  test "preview site has Home and Foo" do
+  test "working site has Home.html and Foo.html" do
     diff = Dir[@site.output_path + "/**/*"].
       map { |f| f.sub(@site.output_path, "") } - ["/Home.html",
                                                   "/Foo.html",
@@ -73,9 +73,16 @@ context "Preview" do
     assert_equal([], diff)
   end
 
-  test "preview site Home content is uncommitted version" do
+  test "working site Home.html content is uncommitted version" do
     data = IO.read(::File.join(@site.output_path, "Home.html"))
     assert_equal("<p>Hello World\nHello World</p>", data)
+  end
+
+  test "one item can be updated" do
+    File.open(@path + '/Foo.md', 'w') { |f| f.write("Baz") }
+    @site.update_working_item('Foo.md')
+    data = IO.read(::File.join(@site.output_path, "Foo.html"))
+    assert_equal("<p>Baz</p>", data)
   end
 
   teardown do

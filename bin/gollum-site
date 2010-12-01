@@ -26,7 +26,8 @@ options = {
   'working' => false,
   'base_path' => '/',
   'output_path' => '_site',
-  'port' => 8000
+  'port' => 8000,
+  'watch' => false
 }
 opts = OptionParser.new do |opts|
   opts.banner = help
@@ -35,7 +36,7 @@ opts = OptionParser.new do |opts|
     options['ref'] = ref
   end
 
-  opts.on("--working", "Use working changes during site generation") do |working|
+  opts.on("--working", "Use working changes during site generation") do
     options['working'] = true
   end
 
@@ -49,6 +50,10 @@ opts = OptionParser.new do |opts|
 
   opts.on("--port [PORT]", "Port to use when serving site (default 8000)") do |port|
     options['port'] = port
+  end
+
+  opts.on("--watch", "Regenerate any changes to the working directory") do
+    options['watch'] = true
   end
 
   opts.on_tail("--help", "Show this information") do
@@ -71,13 +76,41 @@ case cmd
 when 'generate'
   site = Gollum::Site.new('.', {
                             :base_path => options['base_path'],
-                            :output_path => options['output_path']})
-  if options['working']
-    site.generate(:working)
-  else
-    site.generate(options['ref'])
-  end
+                            :output_path => options['output_path'],
+                            :version => options['working'] ? :working : options['ref']
+                          })
+  site.generate()
 when 'serve'
+  if options['watch']
+    require 'directory_watcher'
+
+    dw = DirectoryWatcher.new('.')
+    dw.interval = 1
+    dw.glob = '**/*'
+
+    site = Gollum::Site.new('.', {
+                              :base_path => options['base_path'],
+                              :output_path => options['output_path'],
+                              :version => :working
+                            })
+
+    dw.add_observer do |*args|
+      args.each do |event|
+        # Only respond to modified events
+        if event.type == :modified
+          # Ignore modifications to output path
+          unless ::File.expand_path(event.path).match(::File.expand_path(site.output_path))
+            item = event.path[2..-1]
+            puts "Updating #{item}"
+            site.update_working_item(item)
+          end
+        end
+      end
+    end
+
+    dw.start
+  end
+
   require 'webrick'
   include WEBrick
 

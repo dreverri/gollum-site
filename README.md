@@ -75,6 +75,14 @@ You can generate a static site from untracked/uncommitted changes by using the
 
        $ gollum-site generate --working
 
+## Watch
+
+When running the gollum-site server you can enable directory watching to update
+the static site when changes are made to any of the wiki or static files. This
+currently does not work for layout updates (full site regeneration is required).
+
+       $ gollum-site serve --watch
+
 ## Example
 
 To see gollum-site in action, let's use it to generate a static site from a
@@ -87,3 +95,13 @@ Gollum Wiki. For this example I will use the Radiant wiki:
 
 Now you can browse to http://localhost:8000 and view the Radiant wiki as a
 static site.
+
+If you'd like to see generate the radiant wiki with the Gollum layout:
+
+       $ gollum-site import # imports a simple layout
+       $ gollum-site generate --working
+       $ gollum-site serve --watch
+
+Now you can browse to http://localhost:8000 and view the Radiant wiki.
+Additionally, you can make changes to the wiki files that will automatically
+update in the static site.

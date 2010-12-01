@@ -23,12 +23,18 @@ module Gollum
       end
       ::Dir.mkdir(@output_path) unless ::File.exists? @output_path
 
+      ls_opts = {:others => true,
+        :exclude_standard => true,
+        :cached => true}
+
+      # if output_path is in work_tree, it should be excluded
+      if ::File.expand_path(@output_path).match(::File.expand_path(@wiki.repo.git.work_tree))
+        ls_opts[:exclude] = @output_path
+      end
+
       cwd = Dir.pwd # need to change directories for git ls-files -o
       Dir.chdir(@wiki.repo.git.work_tree)
-      work_tree = @wiki.repo.git.native(:ls_files, {:others => true,
-                              :exclude_standard => true,
-                              :cached => true}) \
-        .split("\n") \
+      work_tree = @wiki.repo.git.native(:ls_files, ls_opts).split("\n") \
         .map { |path| ::File.join(@wiki.repo.git.work_tree, path) }
       Dir.chdir(cwd) # change back to original directory
 

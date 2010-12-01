@@ -51,8 +51,10 @@ end
 
 context "Preview" do
   setup do
-    path = testpath("examples/uncommitted_untracked_changes")
-    @site = Gollum::Site.new(path,
+    @path = testpath("examples/uncommitted_untracked_changes")
+    File.open(@path + '/Foo.md', 'w') { |f| f.write("Bar") }
+    File.open(@path + '/Home.md', 'w') { |f| f.write("Hello World\nHello World") }
+    @site = Gollum::Site.new(@path,
                              {:output_path => testpath("examples/site")})
     @site.preview()
   end
@@ -71,6 +73,8 @@ context "Preview" do
   end
 
   teardown do
+    FileUtils.rm(@path + '/Foo.md')
+    File.open(@path + '/Home.md', 'w') { |f| f.write("Hello World\n") }
     FileUtils.rm_r(@site.output_path)
   end
 end

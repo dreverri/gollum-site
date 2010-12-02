@@ -45,7 +45,7 @@ module Gollum
           blob = OpenStruct.new(:name => filename, :data => item.data)
           page.populate(blob, dirname)
           page.version = @commit
-          @pages[page.name] = page
+          @pages[page.name.downcase] = page
         else
           # file
           @files[item.path] = item.data

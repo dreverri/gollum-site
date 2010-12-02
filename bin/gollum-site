@@ -84,9 +84,11 @@ when 'serve'
   if options['watch']
     require 'directory_watcher'
 
-    dw = DirectoryWatcher.new('.')
-    dw.interval = 1
-    dw.glob = '**/*'
+    dw = DirectoryWatcher.new('.', {
+                                :glob => '**/*',
+                                :pre_load => true,
+                                :interval => 1
+                              })
 
     site = Gollum::Site.new('.', {
                               :base_path => options['base_path'],
@@ -96,8 +98,8 @@ when 'serve'
 
     dw.add_observer do |*args|
       args.each do |event|
-        # Only respond to modified events
-        if event.type == :modified
+        # Only respond to modified/added events
+        if event.type == :modified or event.type == :added
           # Ignore modifications to output path
           unless ::File.expand_path(event.path).match(::File.expand_path(site.output_path))
             item = event.path[2..-1]

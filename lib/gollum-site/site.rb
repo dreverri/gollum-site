@@ -106,7 +106,7 @@ module Gollum
         blob = OpenStruct.new(:name => filename, :data => IO.read(abspath))
         page.populate(blob, dirname)
         page.version = @commit
-        @pages[page.name] = page
+        @pages[page.name.downcase] = page
         page.generate(@output_path, @version)
       else
         # file

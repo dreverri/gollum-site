@@ -99,7 +99,7 @@ static site.
 If you'd like to see generate the radiant wiki with the Gollum layout:
 
        $ gollum-site import # imports a simple layout
-       $ gollum-site generate --working
+       $ gollum-site generate --working # this is SLOW
        $ gollum-site serve --watch
 
 Now you can browse to http://localhost:8000 and view the Radiant wiki.

@@ -83,6 +83,9 @@ currently does not work for layout updates (full site regeneration is required).
 
        $ gollum-site serve --watch
 
+This feature requires the
+[directory_watcher](https://rubygems.org/gems/directory_watcher) gem
+
 ## Example
 
 To see gollum-site in action, let's use it to generate a static site from a

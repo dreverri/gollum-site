@@ -136,5 +136,9 @@ module Gollum
         end
       end
     end
+
+    def to_liquid
+      { "pages" => @pages }
+    end
   end
 end

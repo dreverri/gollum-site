@@ -42,6 +42,7 @@ module Gollum
     def generate(output_path, version)
       data = if l = layout()
         l.render( 'page' => self,
+                  'site' => @wiki.site,
                   'wiki' => {'base_path' => @wiki.base_path})
       else
         formatted_data
@@ -53,8 +54,9 @@ module Gollum
     end
 
     # Return data for Liquid template
-    def to_liquid()
+    def to_liquid
       { "path" => self.class.cname(name),
+        "link" => ::File.join(@wiki.base_path, CGI.escape(self.class.cname(name))),
         "content" => formatted_data,
         "title" => title,
         "format" => format.to_s,

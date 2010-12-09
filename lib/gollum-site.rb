@@ -12,3 +12,7 @@ require 'gollum-site/markup'
 
 # Absolutely awful hack
 require 'gollum-site/wiki'
+
+# Logging
+require 'mixlib/log'
+require 'gollum-site/log'

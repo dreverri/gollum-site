@@ -125,7 +125,9 @@ module Gollum
       ::Dir.mkdir(@output_path) unless ::File.exists? @output_path
 
       @pages.each do |name, page|
+        SiteLog.debug("Starting page generation - #{name}")
         page.generate(@output_path, @version)
+        SiteLog.debug("Finished page generation - #{name}")
       end
 
       @files.each do |path, data|

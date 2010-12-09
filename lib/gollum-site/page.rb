@@ -41,12 +41,17 @@ module Gollum
     # Output static HTML of current page
     def generate(output_path, version)
       data = if l = layout()
-        l.render( 'page' => self,
-                  'site' => @wiki.site,
-                  'wiki' => {'base_path' => @wiki.base_path})
-      else
-        formatted_data
-      end
+               SiteLog.debug("Found layout - #{name}")
+               SiteLog.debug("Starting page rendering - #{name}")
+               rendered = l.render( 'page' => self,
+                         'site' => @wiki.site,
+                         'wiki' => {'base_path' => @wiki.base_path})
+               SiteLog.debug("Finished page rendering - #{name}")
+               rendered
+             else
+               SiteLog.debug("Did not find layout - #{name}")
+               formatted_data
+             end
 
       ::File.open(::File.join(output_path, self.class.cname(name)), 'w') do |f|
         f.write(data)
@@ -55,19 +60,35 @@ module Gollum
 
     # Return data for Liquid template
     def to_liquid
-      { "path" => self.class.cname(name),
+      @to_liquid ||= liquify
+    end
+
+    def liquify
+      SiteLog.debug("Starting page liquefication - #{name}")
+      data = { "path" => self.class.cname(name),
         "link" => ::File.join(@wiki.base_path, CGI.escape(self.class.cname(name))),
         "content" => formatted_data,
         "title" => title,
         "format" => format.to_s,
         "author" => version.author.name,
         "date" => version.authored_date.strftime("%Y-%m-%d %H:%M:%S")}
+      SiteLog.debug("Finished page liquefication - #{name}")
+      return data
     end
 
     def populate(blob, path)
       @blob = blob
       @path = (path + '/' + blob.name)
       self
+    end
+
+    def formatted_data(&block)
+      if @formatted_data.nil?
+        SiteLog.debug("Starting page formatting - #{name}")
+        @formatted_data = super(&block)
+        SiteLog.debug("Finished page formatting - #{name}")
+      end
+      return @formatted_data
     end
   end
 end

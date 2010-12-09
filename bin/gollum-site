@@ -27,12 +27,13 @@ options = {
   'base_path' => '/',
   'output_path' => '_site',
   'port' => 8000,
-  'watch' => false
+  'watch' => false,
+  'level' => :warn
 }
 opts = OptionParser.new do |opts|
   opts.banner = help
 
-  opts.on("--ref [REF]", "Branch or commit to generate") do |ref|
+  opts.on("--ref REF", "Branch or commit to generate") do |ref|
     options['ref'] = ref
   end
 
@@ -40,7 +41,7 @@ opts = OptionParser.new do |opts|
     options['working'] = true
   end
 
-  opts.on("--base_path [BASE_PATH]", "Prefix to apply to internal links") do |base_path|
+  opts.on("--base_path BASE_PATH", "Prefix to apply to internal links") do |base_path|
     options['base_path'] = base_path
   end
 
@@ -48,12 +49,17 @@ opts = OptionParser.new do |opts|
     options['output_path'] = output_path
   end
 
-  opts.on("--port [PORT]", "Port to use when serving site (default 8000)") do |port|
+  opts.on("--port PORT", "Port to use when serving site (default 8000)") do |port|
     options['port'] = port
   end
 
   opts.on("--watch", "Regenerate any changes to the working directory") do
     options['watch'] = true
+  end
+
+  opts.on("--log_level LEVEL", %w[debug info warn error fatal],
+          "Set logging level (debug, info, warn, error, fatal)") do |level|
+    options['level'] = level.to_sym
   end
 
   opts.on_tail("--help", "Show this information") do
@@ -68,7 +74,16 @@ opts = OptionParser.new do |opts|
   end
 end
 
-opts.parse!
+begin
+  opts.parse!
+rescue Exception => e
+  puts e.message
+  puts ""
+  puts opts
+  exit
+end
+
+Gollum::SiteLog.level = options['level']
 
 cmd = ARGV[0]
 
@@ -79,7 +94,10 @@ when 'generate'
                             :output_path => options['output_path'],
                             :version => options['working'] ? :working : options['ref']
                           })
+  start = Time.now
   site.generate()
+  stop = Time.now
+  Gollum::SiteLog.debug("Generated site in #{stop - start}(s)")
 when 'serve'
   if options['watch']
     require 'directory_watcher'

@@ -14,7 +14,9 @@ module Gollum
                                  # need to change class name in markup.rb
                                  #:markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,
-                                 :base_path => options[:base_path]
+                                 :base_path => options[:base_path],
+                                 :sanitization => false,
+                                 :history_sanitization => false
                                })
       @wiki.site = self
       @output_path = options[:output_path] || "_site"

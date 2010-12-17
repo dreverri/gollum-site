@@ -1,5 +1,28 @@
 module Gollum
   class Markup
+    # Removing sanitization; this will be configurable after Gollum 1.1.0
+    def render(no_follow = false)
+      sanitize_options = no_follow   ? 
+        HISTORY_SANITIZATION_OPTIONS : 
+        SANITIZATION_OPTIONS
+      data = extract_tex(@data)
+      data = extract_code(data)
+      data = extract_tags(data)
+      begin
+        data = GitHub::Markup.render(@name, data)
+        if data.nil?
+          raise "There was an error converting #{@name} to HTML."
+        end
+      rescue Object => e
+        data = %{<p class="gollum-error">#{e.message}</p>}
+      end
+      data = process_tags(data)
+      data = process_code(data)
+      #data = Sanitize.clean(data, sanitize_options)
+      data = process_tex(data)
+      data.gsub!(/<p><\/p>/, '')
+      data
+    end
 
     # Attempt to process the tag as a page link tag.
     #

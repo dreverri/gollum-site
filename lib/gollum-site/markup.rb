@@ -2,8 +2,8 @@ module Gollum
   class Markup
     # Removing sanitization; this will be configurable after Gollum 1.1.0
     def render(no_follow = false)
-      sanitize_options = no_follow   ? 
-        HISTORY_SANITIZATION_OPTIONS : 
+      sanitize_options = no_follow   ?
+        HISTORY_SANITIZATION_OPTIONS :
         SANITIZATION_OPTIONS
       data = extract_tex(@data)
       data = extract_code(data)
@@ -18,7 +18,9 @@ module Gollum
       end
       data = process_tags(data)
       data = process_code(data)
-      #data = Sanitize.clean(data, sanitize_options)
+      sanitize_options[:elements] << 'iframe'
+      sanitize_options[:attributes][:all] << 'frameborder'
+      data = Sanitize.clean(data, sanitize_options)
       data = process_tex(data)
       data.gsub!(/<p><\/p>/, '')
       data
@@ -26,7 +28,7 @@ module Gollum
 
     # Attempt to process the tag as a page link tag.
     #
-    # tag       - The String tag contents (the stuff inside the double 
+    # tag       - The String tag contents (the stuff inside the double
     #             brackets).
     # no_follow - Boolean that determines if rel="nofollow" is added to all
     #             <a> tags.

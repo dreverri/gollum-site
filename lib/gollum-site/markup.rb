@@ -50,6 +50,8 @@ module Gollum
         link_name   = cname
         page = find_page_from_name(cname)
         if page
+          # Update link_name to account for case sensitivity
+          link_name = @wiki.page_class.cname(page.name)
           presence  = "present"
         end
         link = ::File.join(@wiki.base_path, CGI.escape(link_name))

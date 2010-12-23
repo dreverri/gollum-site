@@ -64,13 +64,13 @@ opts = OptionParser.new do |opts|
 
   opts.on_tail("--help", "Show this information") do
     puts opts
-    exit
+    exit! 0
   end
 
   opts.on_tail("--version", "Display current version.") do
     require 'gollum-site/version'
     puts "Gollum Site " + Gollum::Site::VERSION
-    exit 0
+    exit! 0
   end
 end
 
@@ -80,7 +80,7 @@ rescue Exception => e
   puts e.message
   puts ""
   puts opts
-  exit
+  exit! 1
 end
 
 Gollum::SiteLog.level = options['level']

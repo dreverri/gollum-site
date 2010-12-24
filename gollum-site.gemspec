@@ -15,8 +15,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "gollum-site"
 
   s.add_dependency('gollum', '>= 1.1.0')
-  s.add_dependency('liquid')
-  s.add_dependency('mixlib-log')
+  s.add_dependency('liquid', '>= 2.2.2')
+  s.add_dependency('mixlib-log', '>= 1.1.0')
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

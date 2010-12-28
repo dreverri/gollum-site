@@ -85,9 +85,7 @@ module Gollum
     def formatted_data(&block)
       if @formatted_data.nil?
         SiteLog.debug("Starting page formatting - #{name}")
-        data = super(&block)
-        data = data.force_encoding('UTF-8') if data.respond_to?(:force_encoding)
-        @formatted_data = data
+        @formatted_data = super(&block)
         SiteLog.debug("Finished page formatting - #{name}")
       end
       return @formatted_data

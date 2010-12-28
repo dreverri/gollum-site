@@ -5,7 +5,12 @@ module Gollum
       sanitize_options = no_follow   ?
         HISTORY_SANITIZATION_OPTIONS :
         SANITIZATION_OPTIONS
-      data = extract_tex(@data)
+      if @data.respond_to?(:force_encoding)
+        data = @data.force_encoding('UTF-8')
+      else
+        data = @data
+      end
+      data = extract_tex(data)
       data = extract_code(data)
       data = extract_tags(data)
       begin

@@ -141,7 +141,7 @@ when 'serve'
                      :Port            => options['port'],
                      :DocumentRoot    => options['output_path'],
                      :MimeTypes       => mime_types,
-                     :DirectoryIndex  => 'Home.html'
+                     :DirectoryIndex  => ['Home.html']
                      )
 
   t = Thread.new {

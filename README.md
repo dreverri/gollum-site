@@ -61,7 +61,7 @@ generation with the following data made available to it:
 
 **A note about wiki.base_path**
 
-> **tl;dr** - Don't use "." or "" as base paths. Use "./" if relative paths are required.
+*tl;dr* - Don't use "." or "" as base paths. Use "./" if relative paths are required.
 
 The application of base path differs between Gollum page links and the layout.
 Gollum uses `File.join` to combine the base path and the page link. The layout simply

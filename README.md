@@ -59,12 +59,79 @@ generation with the following data made available to it:
 * `page.author`          The author of the last edit
 * `page.date`            The date of the last edit
 
+**A note about wiki.base_path**
+
+> **tl;dr** - Don't use "." or "" as base paths. Use "./" if relative paths are required.
+
+The application of base path differs between Gollum page links and the layout.
+Gollum uses `File.join` to combine the base path and the page link. The layout simply
+renders the base path provided by the user. This can result in differing URLs.
+
+Scenario 1: Don't include a forward slash after wiki.base_path in layouts
+
+<table border="1" cellspacing="0" cellpadding="10">
+<thead>
+<tr>
+<th>base_path</th>
+<th>Gollum Link</th>
+<th>URL</th>
+<th>Layout Link</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"."</td>
+<td>[[Page]]</td>
+<td>"./Page"</td>
+<td>"{{ wiki.base_path }}Page"</td>
+<td>".Page"</td>
+</tr>
+<tr>
+<td>""</td>
+<td>[[Page]]</td>
+<td>"/Page"</td>
+<td>"{{ wiki.base_path }}Page"</td>
+<td>"Page"</td>
+</tr>
+</tbody>
+</table>
+
+Scenario 2: Include a forward slash after wiki.base_path in layouts
+
+
+<table border="1" cellspacing="0" cellpadding="10">
+<thead>
+<tr>
+<th>base_path</th>
+<th>Gollum Link</th>
+<th>URL</th>
+<th>Layout Link</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"/"</td>
+<td>[[Page]]</td>
+<td>"/Page"</td>
+<td>"{{ wiki.base_path }}/Page"</td>
+<td>"//Page"</td>
+</tr>
+</tbody>
+</table>
+
+Considering scenario 2 breaks links when using the default base path it is advised
+to use scenario 1 and not use "." and "" as base paths. Use "./" if relative paths
+are required.
+
 ## Import
 
 The gollum-site executable provides the ability to import the default layout to
 the current wiki. The import command will copy the required "_Layout.html", css
 and javascript to the current wiki. These files must be committed to the wiki
-repository before the 'generate' command will recognize them.
+repository before the 'generate' command will recognize them unless you use the
+"--working" option.
 
        $ gollum-site import
 

@@ -1,6 +1,6 @@
 module Gollum
   class Markup
-    # Removing sanitization; this will be configurable after Gollum 1.1.0
+    # Removing sanitization; this will be configurable after Gollum 1.1.*
     def render(no_follow = false)
       sanitize_options = no_follow   ?
         HISTORY_SANITIZATION_OPTIONS :

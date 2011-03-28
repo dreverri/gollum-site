@@ -10,11 +10,13 @@ module Gollum
 
     def initialize(path, options = {})
       @wiki = Gollum::Wiki.new(path, {
-                                 # markup_class should work after v1.1.0 of Gollum
+                                 # markup_class should work after v1.1.* of Gollum
                                  # need to change class name in markup.rb
                                  #:markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,
                                  :base_path => options[:base_path],
+                                 # these options will be valid
+                                 # after v1.1.* of Gollum
                                  :sanitization => false,
                                  :history_sanitization => false
                                })

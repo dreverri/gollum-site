@@ -97,7 +97,7 @@ when 'generate'
   start = Time.now
   site.generate()
   stop = Time.now
-  Gollum::SiteLog.debug("Generated site in #{stop - start}(s)")
+  Gollum::SiteLog.info("Generated site in #{stop - start}(s)")
 when 'serve'
   if options['watch']
     require 'directory_watcher'

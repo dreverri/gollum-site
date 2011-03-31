@@ -10,13 +10,9 @@ module Gollum
 
     def initialize(path, options = {})
       @wiki = Gollum::Wiki.new(path, {
-                                 # markup_class should work after v1.1.* of Gollum
-                                 # need to change class name in markup.rb
-                                 #:markup_class => Gollum::SiteMarkup,
+                                 :markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,
                                  :base_path => options[:base_path],
-                                 # these options will be valid
-                                 # after v1.1.* of Gollum
                                  :sanitization => false,
                                  :history_sanitization => false
                                })
@@ -83,7 +79,7 @@ module Gollum
         deleted = @wiki.repo.git.native(:ls_files, ls_opts_del).split("\0")
         working = @wiki.repo.git.native(:ls_files, ls_opts).split("\0")
         work_tree = (working - deleted).map do |path|
-          path = @wiki.decode_git_path(path)
+          path = decode_git_path(path)
           OpenStruct.new(:path => path, :data => IO.read(path))
         end
         Dir.chdir(cwd) # change back to original directory
@@ -145,6 +141,20 @@ module Gollum
 
     def to_liquid
       { "pages" => @pages }
+    end
+
+    # Decode octal sequences (\NNN) in tree path names.
+    #
+    # path - String path name.
+    #
+    # Returns a decoded String.
+    def decode_git_path(path)
+      if path[0] == ?" && path[-1] == ?"
+        path = path[1...-1]
+        path.gsub!(/\\\d{3}/)   { |m| m[1..-1].to_i(8).chr }
+      end
+      path.gsub!(/\\[rn"\\]/) { |m| eval(%("#{m.to_s}")) }
+      path
     end
   end
 end

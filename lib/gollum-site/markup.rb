@@ -1,36 +1,5 @@
 module Gollum
-  class Markup
-    # Removing sanitization; this will be configurable after Gollum 1.1.*
-    def render(no_follow = false)
-      sanitize_options = no_follow   ?
-        HISTORY_SANITIZATION_OPTIONS :
-        SANITIZATION_OPTIONS
-      if @data.respond_to?(:force_encoding)
-        data = @data.force_encoding('UTF-8')
-      else
-        data = @data
-      end
-      data = extract_tex(data)
-      data = extract_code(data)
-      data = extract_tags(data)
-      begin
-        data = GitHub::Markup.render(@name, data)
-        if data.nil?
-          raise "There was an error converting #{@name} to HTML."
-        end
-      rescue Object => e
-        data = %{<p class="gollum-error">#{e.message}</p>}
-      end
-      data = process_tags(data)
-      data = process_code(data)
-      sanitize_options[:elements] << 'iframe'
-      sanitize_options[:attributes][:all] << 'frameborder'
-      data = Sanitize.clean(data, sanitize_options)
-      data = process_tex(data)
-      data.gsub!(/<p><\/p>/, '')
-      data
-    end
-
+  class SiteMarkup < Gollum::Markup
     # Attempt to process the tag as a page link tag.
     #
     # tag       - The String tag contents (the stuff inside the double

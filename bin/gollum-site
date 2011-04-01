@@ -22,7 +22,7 @@ Options:
 HELP
 
 options = {
-  'ref' => ( head = Grit::Repo.new('.').head ) ? head.name : 'master', # current branch
+  'ref' => Grit::Repo.new('.').git.rev_parse({}, "HEAD"), # current HEAD
   'working' => false,
   'base_path' => '/',
   'output_path' => '_site',

@@ -13,8 +13,8 @@ module Gollum
                                  :markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,
                                  :base_path => options[:base_path],
-                                 :sanitization => false,
-                                 :history_sanitization => false
+                                 :sanitization => Gollum::SiteSanitization.new,
+                                 :history_sanitization => Gollum::SiteSanitization.new
                                })
       @wiki.site = self
       @output_path = options[:output_path] || "_site"

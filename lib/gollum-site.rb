@@ -15,3 +15,5 @@ require 'gollum-site/wiki'
 # Logging
 require 'mixlib/log'
 require 'gollum-site/log'
+
+require 'gollum-site/sanitization'

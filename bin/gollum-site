@@ -28,7 +28,9 @@ options = {
   'output_path' => '_site',
   'port' => 8000,
   'watch' => false,
-  'level' => :warn
+  'level' => :warn,
+  'allow_elements' => [],
+  'allow_attributes' => []
 }
 opts = OptionParser.new do |opts|
   opts.banner = help
@@ -55,6 +57,14 @@ opts = OptionParser.new do |opts|
 
   opts.on("--watch", "Regenerate any changes to the working directory") do
     options['watch'] = true
+  end
+
+  opts.on("--allow_elements ELMS", "Custom elements to prevent sanitization") do |elements|
+    options['allow_elements'] = elements.split(',')
+  end
+
+  opts.on("--allow_attributes ATTRS", "Custom attributes to prevent sanitization") do |attrs|
+    options['allow_attributes'] = attrs.split(',')
   end
 
   opts.on("--log_level LEVEL", %w[debug info warn error fatal],
@@ -92,7 +102,9 @@ when 'generate'
   site = Gollum::Site.new('.', {
                             :base_path => options['base_path'],
                             :output_path => options['output_path'],
-                            :version => options['working'] ? :working : options['ref']
+                            :version => options['working'] ? :working : options['ref'],
+                            :allow_elements => options['allow_elements'],
+                            :allow_attributes => options['allow_attributes']
                           })
   start = Time.now
   site.generate()

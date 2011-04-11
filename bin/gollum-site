@@ -30,7 +30,8 @@ options = {
   'watch' => false,
   'level' => :warn,
   'allow_elements' => [],
-  'allow_attributes' => []
+  'allow_attributes' => [],
+  'allow_protocols' => []
 }
 opts = OptionParser.new do |opts|
   opts.banner = help
@@ -65,6 +66,10 @@ opts = OptionParser.new do |opts|
 
   opts.on("--allow_attributes ATTRS", "Custom attributes to prevent sanitization") do |attrs|
     options['allow_attributes'] = attrs.split(',')
+  end
+
+  opts.on("--allow_protocols PROTOCOLS", "Custom protocols to prevent sanitization") do |protocols|
+    options['allow_protocols'] = protocols.split(',')
   end
 
   opts.on("--log_level LEVEL", %w[debug info warn error fatal],
@@ -104,7 +109,8 @@ when 'generate'
                             :output_path => options['output_path'],
                             :version => options['working'] ? :working : options['ref'],
                             :allow_elements => options['allow_elements'],
-                            :allow_attributes => options['allow_attributes']
+                            :allow_attributes => options['allow_attributes'],
+                            :allow_protocols => options['allow_protocols']
                           })
   start = Time.now
   site.generate()

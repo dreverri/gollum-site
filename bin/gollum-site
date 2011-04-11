@@ -60,15 +60,15 @@ opts = OptionParser.new do |opts|
     options['watch'] = true
   end
 
-  opts.on("--allow_elements ELMS", "Custom elements to prevent sanitization") do |elements|
+  opts.on("--allow_elements ELMS", "Custom elements to prevent sanitization (comma separated)") do |elements|
     options['allow_elements'] = elements.split(',')
   end
 
-  opts.on("--allow_attributes ATTRS", "Custom attributes to prevent sanitization") do |attrs|
+  opts.on("--allow_attributes ATTRS", "Custom attributes to prevent sanitization (comma separated)") do |attrs|
     options['allow_attributes'] = attrs.split(',')
   end
 
-  opts.on("--allow_protocols PROTOCOLS", "Custom protocols to prevent sanitization") do |protocols|
+  opts.on("--allow_protocols PROTOCOLS", "Custom protocols to prevent sanitization (comma separated)") do |protocols|
     options['allow_protocols'] = protocols.split(',')
   end
 

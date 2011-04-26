@@ -54,6 +54,9 @@ end
 context "Preview" do
   setup do
     @path = testpath("examples/uncommitted_untracked_changes")
+    @repo = Grit::Repo.init(@path)
+    @repo.add("#{@path}")
+    @repo.commit_all("Initial commit")
     # Add untracked file
     File.open(@path + '/Foo.md', 'w') { |f| f.write("Bar") }
     # Modify tracked file
@@ -78,18 +81,12 @@ context "Preview" do
     assert_equal("<p>Hello World\nHello World</p>", data)
   end
 
-  test "one item can be updated" do
-    File.open(@path + '/Foo.md', 'w') { |f| f.write("Baz") }
-    @site.update_working_item('Foo.md')
-    data = IO.read(::File.join(@site.output_path, "Foo.html"))
-    assert_equal("<p>Baz</p>", data)
-  end
-
   teardown do
     # Remove untracked file
     FileUtils.rm(@path + '/Foo.md')
     # Reset tracked file
     File.open(@path + '/Home.md', 'w') { |f| f.write("Hello World\n") }
     FileUtils.rm_r(@site.output_path)
+    FileUtils.rm_r(@path + '/.git')
   end
 end

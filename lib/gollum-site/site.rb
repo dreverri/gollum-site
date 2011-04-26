@@ -18,18 +18,17 @@ module Gollum
                                })
       @wiki.site = self
       @output_path = options[:output_path] || "_site"
-      set_version(options[:version] || "master")
+      @version = options[:version] || "master"
     end
 
     # Prepare site for specified version
-    def set_version(version)
-      @version = version
+    def prepare()
       @pages = {}
       @files = {}
       @layouts = {}
 
-      @commit = version == :working ? @wiki.repo.commit("HEAD") : @wiki.repo.commit(version)
-      items = self.ls(version)
+      @commit = @version == :working ? @wiki.repo.commit("HEAD") : @wiki.repo.commit(@version)
+      items = self.ls(@version)
 
       items.each do |item|
         filename = ::File.basename(item.path)
@@ -122,6 +121,7 @@ module Gollum
 
     # Public: generate the static site
     def generate()
+      prepare
       ::Dir.mkdir(@output_path) unless ::File.exists? @output_path
 
       @pages.each do |name, page|

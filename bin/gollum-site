@@ -100,6 +100,13 @@ when 'generate'
   puts "Generated site in #{stop - start}(s)"
 when 'serve'
   if options['watch']
+    site = Gollum::Site.new('.', {
+                            :base_path => options['base_path'],
+                            :output_path => options['output_path'],
+                            :version => :working
+                          })
+    site.generate()
+
     require 'directory_watcher'
 
     dw = DirectoryWatcher.new('.', {
@@ -108,12 +115,6 @@ when 'serve'
                                 :interval => 1
                               })
 
-    site = Gollum::Site.new('.', {
-                              :base_path => options['base_path'],
-                              :output_path => options['output_path'],
-                              :version => :working
-                            })
-
     dw.add_observer do |*args|
       args.each do |event|
         # Only respond to modified/added events
@@ -121,8 +122,7 @@ when 'serve'
           # Ignore modifications to output path
           unless ::File.expand_path(event.path).match(::File.expand_path(site.output_path))
             item = event.path[2..-1]
-            puts "Updating #{item}"
-            site.update_working_item(item)
+            site.generate()
           end
         end
       end

@@ -90,35 +90,6 @@ module Gollum
       end
     end
 
-    # path must be relative to top level of wiki repo
-    def update_working_item(path)
-      filename = ::File.basename(path)
-      dirname = ::File.dirname(path)
-      if filename =~ /^_Footer./
-        # ignore
-      elsif filename =~ /^_Layout.html/
-        # layout
-      elsif @wiki.page_class.valid_page_name?(filename)
-        # page
-        abspath = ::File.join(@wiki.repo.git.work_tree, path)
-        page = @wiki.page_class.new(@wiki)
-        blob = OpenStruct.new(:name => filename, :data => IO.read(abspath))
-        page.populate(blob, dirname)
-        page.version = @commit
-        @pages[page.name.downcase] = page
-        page.generate(@output_path, @version)
-      else
-        # file
-        data = IO.read(abspath)
-        @files[path] = data
-        path = ::File.join(@output_path, path)
-        ::FileUtils.mkdir_p(::File.dirname(path))
-        ::File.open(path, "w") do |f|
-          f.write(data)
-        end
-      end
-    end
-
     # Public: generate the static site
     def generate()
       prepare

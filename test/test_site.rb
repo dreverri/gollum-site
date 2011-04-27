@@ -118,3 +118,40 @@ context "Preview" do
     FileUtils.rm_r(@path + '/.git')
   end
 end
+
+context "Sanitization" do
+  setup do
+    @path = Dir.mktmpdir('gollumsite')
+    @repo = Grit::Repo.init(@path)
+    @repo.add("#{@path}")
+    @repo.commit_all("Initial commit")
+    # protocols
+    File.open(@path + '/Home.md', 'w') { |f| f.write("<a href=\"irc://irc.freenode.net/foo\">Hello World</a>") }
+    # elements
+    File.open(@path + '/Foo.md', 'w') { |f| f.write("<embed src=\"foo.html\">") }
+    @site = Gollum::Site.new(@path, {
+                               :output_path => testpath("examples/site"),
+                               :version => :working,
+                               :allow_protocols => ['irc'],
+                               :allow_elements => ['embed'],
+                               :allow_attributes => ['src']
+                             })
+    @site.generate()
+  end
+
+  test "link with irc protocol" do
+    data = IO.read(::File.join(@site.output_path, "Home.html"))
+    assert_equal("<p><a href=\"irc://irc.freenode.net/foo\">Hello World</a></p>", data)
+  end
+
+  test "embed with src" do
+    data = IO.read(::File.join(@site.output_path, "Foo.html"))
+    assert_equal("<p><embed src=\"foo.html\"></embed></p>", data)
+  end
+
+  teardown do
+    FileUtils.rm_r(@site.output_path)
+    FileUtils.rm_r(@path)
+  end
+
+end

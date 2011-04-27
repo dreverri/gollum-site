@@ -11,9 +11,9 @@ module Gollum
     def initialize(path, options = {})
       @path = path
       sanitization = Gollum::SiteSanitization.new
-      sanitization.elements.concat options[:allow_elements]
-      sanitization.attributes[:all].concat options[:allow_attributes]
-      sanitization.protocols['a']['href'].concat options[:allow_protocols]
+      sanitization.elements.concat options[:allow_elements] || []
+      sanitization.attributes[:all].concat options[:allow_attributes] || []
+      sanitization.protocols['a']['href'].concat options[:allow_protocols] || []
       @wiki = Gollum::Wiki.new(path, {
                                  :markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,

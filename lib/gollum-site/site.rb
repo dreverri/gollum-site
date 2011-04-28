@@ -40,6 +40,8 @@ module Gollum
         dirname = ::File.dirname(item.path)
         if filename =~ /^_Footer./
           # ignore
+        elsif filename =~ /^_Sidebar./
+          # ignore
         elsif ::File.basename(dirname) == "_hooks"
           # ignore
         elsif filename =~ /^_Layout.html/

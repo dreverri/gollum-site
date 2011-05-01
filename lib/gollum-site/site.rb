@@ -10,16 +10,12 @@ module Gollum
 
     def initialize(path, options = {})
       @path = path
-      sanitization = Gollum::SiteSanitization.new
-      sanitization.elements.concat options[:allow_elements] || []
-      sanitization.attributes[:all].concat options[:allow_attributes] || []
-      sanitization.protocols['a']['href'].concat options[:allow_protocols] || []
       @wiki = Gollum::Wiki.new(path, {
                                  :markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,
                                  :base_path => options[:base_path],
-                                 :sanitization => sanitization,
-                                 :history_sanitization => Gollum::SiteSanitization.new
+                                 :sanitization => sanitization(options),
+                                 :history_sanitization => sanitization(options)
                                })
       @wiki.site = self
       @output_path = options[:output_path] || "_site"
@@ -110,6 +106,14 @@ module Gollum
 
     def hooks
       @hooks ||= {}
+    end
+
+    def sanitization(options)
+      site_sanitization = Gollum::SiteSanitization.new
+      site_sanitization.elements.concat options[:allow_elements] || []
+      site_sanitization.attributes[:all].concat options[:allow_attributes] || []
+      site_sanitization.protocols['a']['href'].concat options[:allow_protocols] || []
+      site_sanitization
     end
 
     public

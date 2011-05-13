@@ -13,8 +13,8 @@ module Gollum
                                  :markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,
                                  :base_path => options[:base_path],
-                                 :sanitization => Gollum::SiteSanitization.new,
-                                 :history_sanitization => Gollum::SiteSanitization.new
+                                 :sanitization => sanitization(options),
+                                 :history_sanitization => sanitization(options)
                                })
       @wiki.site = self
       @output_path = options[:output_path] || "_site"
@@ -27,7 +27,7 @@ module Gollum
       @files = {}
       @layouts = {}
 
-      @commit = @version == :working ? @wiki.repo.commit("HEAD") : @wiki.repo.commit(@version)
+      @commit = @version == :working ? @wiki.repo.head.commit : @wiki.repo.commit(@version)
       items = self.ls(@version)
 
       items.each do |item|
@@ -88,6 +88,14 @@ module Gollum
           OpenStruct.new(:path => entry.path, :data => entry.blob(@wiki.repo).data)
         end
       end
+    end
+
+    def sanitization(options)
+      site_sanitization = Gollum::SiteSanitization.new
+      site_sanitization.elements.concat options[:allow_elements] || []
+      site_sanitization.attributes[:all].concat options[:allow_attributes] || []
+      site_sanitization.protocols['a']['href'].concat options[:allow_protocols] || []
+      site_sanitization
     end
 
     # Public: generate the static site

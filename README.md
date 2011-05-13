@@ -145,13 +145,13 @@ You can generate a static site from untracked/uncommitted changes by using the
 ## Watch
 
 When running the gollum-site server you can enable directory watching to update
-the static site when changes are made to any of the wiki or static files. This
-currently does not work for layout updates (full site regeneration is required).
+the static site when changes are made to any of the wiki or static
+files. This feature only works with the "serve" command.
 
        $ gollum-site serve --watch
 
 This feature requires the
-[directory_watcher](https://rubygems.org/gems/directory_watcher) gem
+[directory_watcher](https://rubygems.org/gems/directory_watcher) gem.
 
 ## Sanitization
 

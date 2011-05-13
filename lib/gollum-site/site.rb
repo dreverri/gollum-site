@@ -35,6 +35,8 @@ module Gollum
         dirname = ::File.dirname(item.path)
         if filename =~ /^_Footer./
           # ignore
+        elsif filename =~ /^_Sidebar./
+          # ignore
         elsif filename =~ /^_Layout.html/
           # layout
           @layouts[item.path] = ::Liquid::Template.parse(item.data)

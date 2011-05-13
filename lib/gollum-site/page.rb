@@ -69,6 +69,8 @@ module Gollum
         "link" => ::File.join(@wiki.base_path, CGI.escape(self.class.cname(name))),
         "content" => formatted_data,
         "title" => title,
+        "footer" => footer.formatted_data,
+        "sidebar" => sidebar.formatted_data,
         "format" => format.to_s,
         "author" => version.author.name,
         "date" => version.authored_date.strftime("%Y-%m-%d %H:%M:%S")}

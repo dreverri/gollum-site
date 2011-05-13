@@ -51,34 +51,6 @@ context "Site" do
   end
 end
 
-context "Hooks" do
-  setup do
-    @path = testpath("examples/test_hooks")
-    @repo = Grit::Repo.init(@path)
-    @repo.add("#{@path}/_hooks")
-    @repo.commit_all("Initial commit")
-    @site = Gollum::Site.new(@path, {
-                               :output_path => testpath("examples/test_hooks/_site"),
-                               :version => :working
-                             })
-    @site.generate
-  end
-
-  test "the before_generate hook is run and the file is written (from inside the hook)" do
-    assert File.file?("#{@path}/hello.md")
-  end
-
-  test "the before_generate hook is run and the file is written (from inside the hook)" do
-    assert File.file?("#{@site.output_path}/hello.html")
-  end
-
-  teardown do
-    [@site.output_path, "#{@path}/.git", "#{@path}/hello.md"].each do |dir|
-      FileUtils.rm_r(dir)
-    end
-  end
-end
-
 context "Preview" do
   setup do
     @path = testpath("examples/uncommitted_untracked_changes")

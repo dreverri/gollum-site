@@ -9,7 +9,6 @@ module Gollum
     attr_reader :pages
 
     def initialize(path, options = {})
-      @path = path
       @wiki = Gollum::Wiki.new(path, {
                                  :markup_class => Gollum::SiteMarkup,
                                  :page_class => Gollum::SitePage,
@@ -20,10 +19,6 @@ module Gollum
       @wiki.site = self
       @output_path = options[:output_path] || "_site"
       @version = options[:version] || "master"
-      Dir[path + "/_hooks/*.rb"].each { |hook_file|
-        hook_name = ::File.basename(hook_file, ::File.extname(hook_file))
-        hooks[hook_name] = Proc.new { instance_eval(open(hook_file).read) }
-      }
     end
 
     # Prepare site for specified version
@@ -39,8 +34,6 @@ module Gollum
         filename = ::File.basename(item.path)
         dirname = ::File.dirname(item.path)
         if filename =~ /^_Footer./
-          # ignore
-        elsif ::File.basename(dirname) == "_hooks"
           # ignore
         elsif filename =~ /^_Layout.html/
           # layout
@@ -97,22 +90,8 @@ module Gollum
       end
     end
 
-    ## HOOKS
-    def run_hook(hook_name)
-      hooks[hook_name].call if hooks[hook_name]
-    end
-
-    private
-
-    def hooks
-      @hooks ||= {}
-    end
-
-    public
-
     # Public: generate the static site
     def generate()
-      run_hook("before_generate")
       prepare
       ::Dir.mkdir(@output_path) unless ::File.exists? @output_path
 

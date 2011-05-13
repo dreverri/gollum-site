@@ -16,7 +16,7 @@ module Gollum
       'select', 'small', 'span', 'strike', 'strong', 'sub',
       'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th',
       'thead', 'tr', 'tt', 'u', 'ul', 'var', 'iframe'
-    ].freeze
+    ]
 
     # Default whitelisted attributes.
     ATTRIBUTES = {

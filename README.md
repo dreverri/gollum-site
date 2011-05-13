@@ -153,6 +153,16 @@ currently does not work for layout updates (full site regeneration is required).
 This feature requires the
 [directory_watcher](https://rubygems.org/gems/directory_watcher) gem
 
+## Sanitization
+
+You can customize sanitization with three options:
+
+* --allow_elements: custom elements allowed, comma separated
+* --allow_attributes: custom attributes allowed, comma separated
+* --allow_protocols: custom protocols in *href* allowed, comma separated
+
+       $ gollum-site generate --allow_elements embed,object --allow_attributes src --allow_protocols irc
+
 ## Example
 
 To see gollum-site in action, let's use it to generate a static site from a

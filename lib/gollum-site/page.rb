@@ -65,15 +65,17 @@ module Gollum
 
     def liquify
       SiteLog.debug("Starting page liquefication - #{name}")
-      data = { "path" => self.class.cname(name),
+      data = {
+        "path" => self.class.cname(name),
         "link" => ::File.join(@wiki.base_path, CGI.escape(self.class.cname(name))),
         "content" => formatted_data,
         "title" => title,
-        "footer" => footer.formatted_data,
-        "sidebar" => sidebar.formatted_data,
-        "format" => format.to_s,
-        "author" => version.author.name,
-        "date" => version.authored_date.strftime("%Y-%m-%d %H:%M:%S")}
+        "format" => format.to_s
+      }
+      data["author"] = version.author.name rescue nil
+      data["date"] = version.authored_date.strftime("%Y-%m-%d %H:%M:%S") rescue nil
+      data["footer"] = footer.formatted_data if footer
+      data["sidebar"] = sidebar.formatted_data if sidebar
       SiteLog.debug("Finished page liquefication - #{name}")
       return data
     end

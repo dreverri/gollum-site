@@ -127,3 +127,34 @@ context "Sanitization" do
   end
 
 end
+
+context "Sidebar and Footer" do
+  setup do
+    @path = testpath("examples/test_footer_and_sidebar.git")
+
+    @site = Gollum::Site.new(@path, {
+                               :output_path => testpath("examples/site"),
+                               :version => "master"
+                             })
+    @site.generate()
+  end
+
+  test "Sidebar and Footer files are ignored" do
+    assert !File.exists?(@site.output_path + '_Footer.html')
+    assert !File.exists?(@site.output_path + '_Sidebar.html')
+  end
+
+  test "Footer is rendered in _Layout" do
+    data = IO.read(::File.join(@site.output_path, "footer.html"))
+    assert_equal "<p>hello</p>\n", data
+  end
+
+  test "Sidebar is rendered in _Layout" do
+    data = IO.read(::File.join(@site.output_path, "sidebar.html"))
+    assert_equal "<p>world</p>\n", data
+  end
+
+  teardown do
+    FileUtils.rm_r(@site.output_path)
+  end
+end

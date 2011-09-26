@@ -91,6 +91,37 @@ context "Preview" do
   end
 end
 
+context "Ignorefile" do
+  setup do
+    @path = testpath("examples/test_ignorefile.git")
+    @repo = Grit::Repo.init(@path)
+    File.open(@path + '/.gollumignore', 'w') { |f| f.write("Ignore*.*") }
+    File.open(@path + '/Home.md', 'w') { |f| f.write("Home file.") }
+    File.open(@path + '/IgnoreRepo.md', 'w') { |f| f.write("Ignore this repo file.") }
+    @repo.add(@path)
+    @repo.commit_all("Initial commit.")
+    # Add untracked working files
+    File.open(@path + '/IgnoreWorking.md', 'w') { |f| f.write("Ignore this working file.") }
+    File.open(@path + '/UseWorking.md', 'w') { |f| f.write("Use me.") }
+    @site = Gollum::Site.new(@path, {
+                               :output_path => testpath("examples/site"),
+                               :version => :working
+                             })
+    @site.generate()
+  end
+
+  test "working site has no ignored files" do
+    diff = Dir[@site.output_path + "/**/*"].
+      map { |f| f.sub(@site.output_path, "") }
+    assert_equal(["/Home.html", "/UseWorking.html"], diff)
+  end
+
+  teardown do
+    FileUtils.rm_r(@site.output_path)
+    FileUtils.rm_r(@path)
+  end
+end
+
 context "Sanitization" do
   setup do
     @path = Dir.mktmpdir('gollumsite')

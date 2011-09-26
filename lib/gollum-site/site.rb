@@ -1,4 +1,5 @@
 module Gollum
+
   class Site
     def self.default_layout_dir()
       ::File.join(::File.dirname(::File.expand_path(__FILE__)), "layout")
@@ -33,11 +34,7 @@ module Gollum
       items.each do |item|
         filename = ::File.basename(item.path)
         dirname = ::File.dirname(item.path)
-        if filename =~ /^_Footer./
-          # ignore
-        elsif filename =~ /^_Sidebar./
-          # ignore
-        elsif filename =~ /^_Layout.html/
+        if filename =~ /^_Layout.html/
           # layout
           @layouts[item.path] = ::Liquid::Template.parse(item.data)
         elsif @wiki.page_class.valid_page_name?(filename)
@@ -56,37 +53,17 @@ module Gollum
 
     def ls(version = 'master')
       if version == :working
-        ls_opts = {
-          :others => true,
-          :exclude_standard => true,
-          :cached => true,
-          :z => true
-        }
-
-        ls_opts_del = {
-          :deleted => true,
-          :exclude_standard => true,
-          :z => true
-        }
-
-        # if output_path is in work_tree, it should be excluded
-        if ::File.expand_path(@output_path).match(::File.expand_path(@wiki.repo.git.work_tree))
-          ls_opts[:exclude] = @output_path
-          ls_opts_del[:exclude] = @output_path
+        return in_work_tree do
+          working = ls_files(:exclude => @output_path, :others => true, :cached => true)
+          deleted = ls_files(:exclude => @output_path, :deleted => true)
+          ignored = ignored_list(version)
+          valid_files = working - deleted - ignored
+          valid_files.map do |path|
+            OpenStruct.new(:path => path, :data => IO.read(path))
+          end
         end
-
-        cwd = Dir.pwd # need to change directories for git ls-files -o
-        Dir.chdir(@wiki.repo.git.work_tree)
-        deleted = @wiki.repo.git.native(:ls_files, ls_opts_del).split("\0")
-        working = @wiki.repo.git.native(:ls_files, ls_opts).split("\0")
-        work_tree = (working - deleted).map do |path|
-          path = decode_git_path(path)
-          OpenStruct.new(:path => path, :data => IO.read(path))
-        end
-        Dir.chdir(cwd) # change back to original directory
-        return work_tree
       else
-        return @wiki.tree_map_for(version).map do |entry|
+        return @wiki.tree_map_for(version).reject {|entry| ignored? entry.path }.map do |entry|
           OpenStruct.new(:path => entry.path, :data => entry.blob(@wiki.repo).data)
         end
       end
@@ -137,5 +114,40 @@ module Gollum
       path.gsub!(/\\[rn"\\]/) { |m| eval(%("#{m.to_s}")) }
       path
     end
-  end
-end
+
+    def ignored?(path)
+      @ignored_list ||= ignored_list
+      @ignored_list.include? path
+    end
+
+    def ignored_list(version = 'master')
+      in_work_tree do
+        ignore = ls_files(:ignored => true, :exclude_from => '.gollumignore')
+        if version == :working
+          ignore += ls_files(:ignored => true, :exclude_from => '.gollumignore', :other => true)
+        else
+          ignore += ls_files(:other => true)
+        end
+        # grit does not correctly handle multiple options with the same name
+        ignore += ls_files(:ignored => true, :exclude => '.gollumignore')
+        ignore += ls_files(:ignored => true, :exclude => '.gitignore')
+        ignore += ls_files(:ignored => true, :exclude => '_Sidebar.*')
+        ignore += ls_files(:ignored => true, :exclude => '_Footer.*')
+      end
+    end
+
+    def ls_files(opts)
+      opts.merge!(:z => true, :exclude_standard => true)
+      @wiki.repo.git.native(:ls_files, opts).split("\0").map {|path| decode_git_path(path) }
+    end
+
+    def in_work_tree
+      cwd = Dir.pwd
+      Dir.chdir(@wiki.repo.git.work_tree)
+      result = yield
+      Dir.chdir(cwd)
+      result
+    end
+  end # Site
+
+end # Gollum

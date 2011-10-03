@@ -163,6 +163,12 @@ You can customize sanitization with three options:
 
        $ gollum-site generate --allow_elements embed,object --allow_attributes src --allow_protocols irc
 
+## Ignore File
+
+If there is a file named `.gollumignore` in the root of the repository, the
+exclusions it specifies will be used to suppress gollum-site generation
+accordingly. The `.gollumignore` file uses `.gitignore` semantics.
+
 ## Example
 
 To see gollum-site in action, let's use it to generate a static site from a

@@ -11,7 +11,7 @@ module Gollum
 
     def initialize(path, options = {})
       @wiki = Gollum::Wiki.new(path, {
-                                 :markup_class => Gollum::SiteMarkup,
+                                 :markup_classes => Hash.new(Gollum::SiteMarkup),
                                  :page_class => Gollum::SitePage,
                                  :base_path => options[:base_path],
                                  :sanitization => sanitization(options),

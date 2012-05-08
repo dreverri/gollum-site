@@ -43,7 +43,7 @@ The executable provides a few options which are described in the help menu:
 ## Static Site Templates
 
 The static site generator uses the
-[Liquid templating system](http://github.com/tobi/liquid/wiki) to render wiki
+[Liquid templating system](https://github.com/Shopify/liquid/wiki) to render wiki
 pages. The generator looks for `_Layout.html` files to use as templates. Layouts
 affect all pages in their directory and any subdirectories that do not have a
 layout file of their own.

@@ -146,7 +146,7 @@ when 'serve'
             item = event.path[2..-1]
             puts "Regenerating site"
             start = Time.now
-            site.generate()
+            site.generate_page(item)
             stop = Time.now
             puts "Generated site in #{stop - start}(s)"
           end

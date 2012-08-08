@@ -97,6 +97,44 @@ module Gollum
       end
     end
 
+    # Public: generate a single page unless the argument is the 
+    # layout file, in which case geenrate the static site
+    def generate_page(filename)
+        if filename =~ /^_Layout.html/
+          SiteLog.debug("Layout changed - regenerate everything")
+          generate
+        end
+
+        # We need to add ./ to files at the root to ensure a match
+        unless filename.include? "/"
+          filename = "./" + filename
+        end
+
+        prepare
+
+        if @wiki.page_class.valid_page_name?(filename)
+          SiteLog.debug("Only regenerating - #{filename}")
+          @pages.each do |name, page|
+            if page.path == filename
+              SiteLog.debug("Starting page generation - #{name}")
+              page.generate(@output_path, @version)
+              SiteLog.debug("Finished page generation - #{name}")
+            end
+          end
+        else
+          SiteLog.debug("File changed, copying it - #{filename}")
+          @files.each do |path, data|
+            if filename == path
+              path = ::File.join(@output_path, path)
+              ::FileUtils.mkdir_p(::File.dirname(path))
+              ::File.open(path, "w") do |f|
+                f.write(data)
+              end
+            end
+          end
+        end
+    end
+
     def to_liquid
       { "pages" => @pages }
     end

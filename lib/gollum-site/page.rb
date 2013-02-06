@@ -15,7 +15,7 @@ module Gollum
     end
 
     # Markup uses this method for absent/present class assignment on page links
-    def find(cname, version)
+    def find(cname, version, dir = nil, exact = false)
       name = self.class.canonicalize_filename(cname)
       @wiki.site.pages[name.downcase]
     end

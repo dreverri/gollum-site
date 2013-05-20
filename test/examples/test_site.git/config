@@ -1,8 +1,12 @@
 [core]
 	repositoryformatversion = 0
 	filemode = true
-	bare = true
+	bare = false
+	logallrefupdates = true
 	ignorecase = true
-	precomposeunicode = false
 [remote "origin"]
-	url = /Users/mpemer/src/gollum-site/test/examples/test_site.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	url = /Users/dreverri/src/basho/gollum-site/test/examples/test_site.git
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master

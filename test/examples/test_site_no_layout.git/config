@@ -1,8 +1,6 @@
 [core]
 	repositoryformatversion = 0
 	filemode = true
-	bare = true
+	bare = false
+	logallrefupdates = true
 	ignorecase = true
-	precomposeunicode = false
-[remote "origin"]
-	url = /Users/mpemer/src/gollum-site/test/examples/test_site_no_layout.git

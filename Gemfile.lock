@@ -34,6 +34,7 @@ GEM
     pygments.rb (0.4.2)
       posix-spawn (~> 0.3.6)
       yajl-ruby (~> 1.1.0)
+    rake (10.0.4)
     sanitize (2.0.3)
       nokogiri (>= 1.4.4, < 1.6)
     stringex (1.5.1)
@@ -44,3 +45,4 @@ PLATFORMS
 
 DEPENDENCIES
   gollum-site!
+  rake

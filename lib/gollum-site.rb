@@ -1,4 +1,4 @@
-require 'gollum'
+require 'gollum-lib'
 require 'liquid'
 require 'gollum-site/site'
 

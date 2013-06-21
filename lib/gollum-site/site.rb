@@ -20,6 +20,7 @@ module Gollum
       @wiki.site = self
       @output_path = options[:output_path] || "_site"
       @version = options[:version] || "master"
+      @preserve_tree = options[:preserve_tree]
     end
 
     # Prepare site for specified version
@@ -43,7 +44,13 @@ module Gollum
           blob = OpenStruct.new(:name => filename, :data => item.data)
           page.populate(blob, dirname)
           page.version = @commit
-          @pages[page.name.downcase] = page
+
+          if @preserve_tree
+            key = [::File.dirname(item.path).gsub(/^\./, "").gsub(/\//, ' '), page.name].join(" ").strip.downcase
+          else
+            key = page.name.downcase
+          end
+          @pages[key] = page
         else
           # file
           @files[item.path] = item.data
@@ -84,7 +91,7 @@ module Gollum
 
       @pages.each do |name, page|
         SiteLog.debug("Starting page generation - #{name}")
-        page.generate(@output_path, @version)
+        page.generate(@output_path, @version, @preserve_tree)
         SiteLog.debug("Finished page generation - #{name}")
       end
 

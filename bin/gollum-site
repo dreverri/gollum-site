@@ -60,6 +60,10 @@ opts = OptionParser.new do |opts|
     options['watch'] = true
   end
 
+  opts.on("--preserve", "Preserve directory structure for wiki documents") do
+    options['preserve'] = true
+  end
+
   opts.on("--allow_elements ELMS", "Custom elements to prevent sanitization (comma separated)") do |elements|
     options['allow_elements'] = elements.split(',')
   end
@@ -108,6 +112,7 @@ when 'generate'
                             :base_path => options['base_path'],
                             :output_path => options['output_path'],
                             :version => options['working'] ? :working : options['ref'],
+                            :preserve_tree => options['preserve'],
                             :allow_elements => options['allow_elements'],
                             :allow_attributes => options['allow_attributes'],
                             :allow_protocols => options['allow_protocols']
@@ -121,7 +126,8 @@ when 'serve'
     site = Gollum::Site.new('.', {
                             :base_path => options['base_path'],
                             :output_path => options['output_path'],
-                            :version => :working
+                            :version => :working,
+                            :preserve_tree => options['preserve'],
                             })
     puts "Generating site"
     start = Time.now

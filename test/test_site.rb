@@ -25,20 +25,20 @@ context "Site" do
 
   test "render page with layout and link" do
     home_path = File.join(@site.output_path, "Home.html")
-    assert_equal(["<html><p>Site test\n",
-                  "<a class=\"internal present\" href=\"/Page1.html#test\">Page1#test</a>\n",
-                  "<a class=\"internal present\" href=\"/Page-One.html#test\">Page with anchor</a></p></html>\n"],
-                 File.open(home_path).readlines)
+    home_path_file = File.open(home_path)
+    assert_equal("<html><p>Site test\n", home_path_file.readline)
+    assert_equal("<a class=\"internal present\" href=\"/Page1.html#test\">Page1#test</a>\n", home_path_file.readline)
+    assert_match(/<a class="internal present" href="\/Page-One.html#test">Page with anchor<\/a><\/p>/, home_path_file.readline)
   end
 
   test "render page with layout from parent dir" do
     page_path = File.join(@site.output_path, "Page1.html")
-    assert_equal(["<html><p>Site test</p></html>\n"], File.open(page_path).readlines)
+    assert_match(/<html><p>Site test<\/p>.*\n/, File.open(page_path).readline)
   end
 
   test "render page with layout from sub dir" do
     page_path = File.join(@site.output_path, "Page2.html")
-    assert_equal(["<html><body><p>Site test</p></body></html>\n"], File.open(page_path).readlines)
+    assert_match(/<html><body><p>Site test<\/p>.*\n/, File.open(page_path).readline)
   end
 
   test "page.path is available on template" do
@@ -78,7 +78,7 @@ context "Preview" do
 
   test "working site Home.html content is uncommitted version" do
     data = IO.read(::File.join(@site.output_path, "Home.html"))
-    assert_equal("<p>Hello World\nHello World</p>", data)
+    assert_match(/<p>Hello World\nHello World<\/p>/, data)
   end
 
   teardown do
@@ -144,12 +144,12 @@ context "Sanitization" do
 
   test "link with irc protocol" do
     data = IO.read(::File.join(@site.output_path, "Home.html"))
-    assert_equal("<p><a href=\"irc://irc.freenode.net/foo\">Hello World</a></p>", data)
+    assert_match(/<p><a href="irc:\/\/irc.freenode.net\/foo">Hello World<\/a><\/p>/, data)
   end
 
   test "embed with src" do
     data = IO.read(::File.join(@site.output_path, "Foo.html"))
-    assert_equal("<p><embed src=\"foo.html\"></embed></p>", data)
+    assert_match(/<p><embed src="foo.html"><\/embed><\/p>/, data)
   end
 
   teardown do
@@ -177,12 +177,12 @@ context "Sidebar and Footer" do
 
   test "Footer is rendered in _Layout" do
     data = IO.read(::File.join(@site.output_path, "footer.html"))
-    assert_equal "<p>hello</p>\n", data
+    assert_match /<p>hello<\/p>\n/, data
   end
 
   test "Sidebar is rendered in _Layout" do
     data = IO.read(::File.join(@site.output_path, "sidebar.html"))
-    assert_equal "<p>world</p>\n", data
+    assert_match /<p>world<\/p>\n/, data
   end
 
   teardown do

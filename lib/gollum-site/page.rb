@@ -39,7 +39,7 @@ module Gollum
     end
 
     # Output static HTML of current page
-    def generate(output_path, version)
+    def generate(output_path, version, preserve_path=false)
       data = if l = layout()
                SiteLog.debug("Found layout - #{name}")
                SiteLog.debug("Starting page rendering - #{name}")
@@ -53,7 +53,14 @@ module Gollum
                formatted_data
              end
 
-      ::File.open(::File.join(output_path, self.class.cname(name)), 'w') do |f|
+      if !preserve_path || path =~ /^\./
+        dest = ::File.join(output_path, self.class.cname(name))        
+      else
+        dest = ::File.join(output_path, ::File.dirname(path), self.class.cname(name))
+      end
+
+      ::FileUtils.mkdir_p(::File.dirname(dest))
+      ::File.open(dest, 'w') do |f|
         f.write(data)
       end
     end

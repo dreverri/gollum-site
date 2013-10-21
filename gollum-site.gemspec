@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "gollum-site"
 
-  s.add_dependency('gollum-lib', '>=1.0.0')
+  s.add_dependency('gollum-lib', '>=1.0.8')
   s.add_dependency('liquid', '>= 2.2.2')
   s.add_dependency('mixlib-log', '>= 1.1.0')
   s.add_dependency('directory_watcher')

@@ -1,10 +1,12 @@
 module Gollum
   class SitePage < Gollum::Page
+    def url_path
+      self.class.cname(name)
+    end
+
     # Add ".html" extension to page links
-    def self.cname(name)
-      cname = name.respond_to?(:gsub)      ?
-      name.gsub(%r{[ /<>]}, '-') :
-        ''
+    def self.cname(name, char_white_sub = '-', char_other_sub = '-')
+      cname = super(name, char_white_sub, char_other_sub)
 
       # account for anchor links (e.g. Page#anchor)
       if pos = cname.index('#')
@@ -16,6 +18,7 @@ module Gollum
 
     # Markup uses this method for absent/present class assignment on page links
     def find(cname, version, dir = nil, exact = false)
+      return nil if cname.index('#') # play nicely with find_page_from_name
       name = self.class.canonicalize_filename(cname)
       @wiki.site.pages[name.downcase]
     end
@@ -54,7 +57,7 @@ module Gollum
              end
 
       if !preserve_path || path =~ /^\./
-        dest = ::File.join(output_path, self.class.cname(name))        
+        dest = ::File.join(output_path, self.class.cname(name))
       else
         dest = ::File.join(output_path, ::File.dirname(path), self.class.cname(name))
       end

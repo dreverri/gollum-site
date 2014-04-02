@@ -19,6 +19,8 @@ Gem::Specification.new do |s|
   s.add_dependency('mixlib-log', '>= 1.1.0')
   s.add_dependency('directory_watcher')
 
+  s.add_development_dependency('github-markdown', '~> 0.5.3')
+
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
